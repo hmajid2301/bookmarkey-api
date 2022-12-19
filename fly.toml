@@ -41,5 +41,5 @@ restart_limit = 0
 timeout = "2s"
 
 [mounts]
-destination = "/pb/pb_data"
+destination = "/pb_data"
 source = "pb_data"
