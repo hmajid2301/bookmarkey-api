@@ -1,127 +1,27 @@
 image: golang:1.19
 
 stages:
-  - pre
-  - test
-  - build
-  - publish
-  - post
+  - deploy
 
-variables:
-  DOCKER_DRIVER: overlay2
-
-before_script:
-  - go mod download
-
-.mongo:
-  services:
-    - mongo:latest
-  variables:
-    MONGO_INITDB_ROOT_USERNAME: banterbus
-    MONGO_INITDB_ROOT_PASSWORD: banterbus
-    MONGO_INITDB_DATABASE: banterbus
-    BANTER_BUS_DB_HOST: mongo
-
-publish-docker:test:
-  stage: pre
+publish:docker:
+  stage: deploy
   only:
     - main
   image: docker
   services:
-    - docker:dind
+    - dind
   before_script: []
   script:
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker build -f Dockerfile -t ${CI_REGISTRY_IMAGE}:test .
-    - docker push ${CI_REGISTRY_IMAGE}:test
+    - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
+    - docker build --cache-from ${CI_REGISTRY_IMAGE} -t ${CI_REGISTRY_IMAGE}:latest .
+    - docker push ${CI_REGISTRY_IMAGE}:latest
 
-sast:
-  stage: test
-include:
-  - template: Security/SAST.gitlab-ci.yml
-
-lint:
-  stage: test
+deploy:
+  stage: deploy
   only:
-    - merge_request
-  script:
-    - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.32.2
-    - make lint
-
-format:check:
-  stage: test
-  only:
-    - merge_request
-  script:
-    - go get -u github.com/segmentio/golines
-    - if [[ $(make format | wc -c) -ne 0 ]]; then exit 1; fi
-
-lint:commits:
-  image: node
-  stage: test
-  only:
-    - merge_request
-  before_script: []
-  script:
-    - 'echo ''module.exports = { extends: ["@commitlint/config-conventional"] };'' > commitlint.config.js'
-    - npm install -g @commitlint/cli @commitlint/config-conventional
-    - git fetch origin ${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
-    - git fetch origin ${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}
-    - commitlint --from=origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME} --to=origin/${CI_MERGE_REQUEST_SOURCE_BRANCH_NAME}
-
-lint:code-quality:
-  stage: test
-  only:
-    - merge_request
     - main
   before_script:
-    - apt update && apt install jq -y
-    - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.32.2
+    - apt-get update -qq && apt-get install -y curl
+    - curl -L https://fly.io/install.sh | sh
   script:
-    - make code-quality | tee gl-code-quality-report.json | jq -r '.[] | "\(.location.path):\(.location.lines.begin) \(.description)"'
-  artifacts:
-    when: always
-    reports:
-      codequality: gl-code-quality-report.json
-
-test:
-  stage: test
-  image: golang
-  only:
-    - merge_request
-  extends:
-    - .mongo
-  script:
-    - make test
-
-coverage:
-  stage: test
-  image: golang
-  only:
-    - merge_request
-    - main
-  extends:
-    - .mongo
-  script:
-    - go get golang.org/x/tools/cmd/cover
-    - go get github.com/t-yuki/gocover-cobertura
-    - go get -u github.com/jstemmer/go-junit-report
-    - make test
-    - make coverage 2>&1 | go-junit-report > junit.xml
-    - gocover-cobertura < coverage.out > cobertura.xml
-  after_script:
-    - cat junit.xml | grep "coverage.statements.pct"
-  coverage: '/value="\d+.\d+"/'
-  artifacts:
-    when: always
-    reports:
-      junit: junit.xml
-
-trigger:e2e:tests:
-  stage: post
-  image: curlimages/curl
-  before_script: []
-  only:
-    - main
-  script:
-    - curl -X POST -F token=$BANTER_BUS_TESTS_CI_TRIGGER_TOKEN -F "variables[SOURCE_TRIGGER]=banter-bus-management-api" -F "variables[DEPLOY_COMMIT]=$CI_COMMIT_SHA" -F ref=main https://gitlab.com/api/v4/projects/28716097/trigger/pipeline
+    - /root/.fly/bin/flyctl deploy
