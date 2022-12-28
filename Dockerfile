@@ -13,4 +13,4 @@ COPY --from=builder /build/bookmarkey .
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 ENTRYPOINT [ "./bookmarkey" ]
-CMD ["serve", "--http=0.0.0.0:8080"]
+CMD ["serve", "--http=0.0.0.0:8080", "--encryptionEnv=PB_ENCRYPTION_KEY"]
