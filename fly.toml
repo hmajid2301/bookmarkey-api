@@ -5,7 +5,7 @@ kill_timeout = 5
 processes = []
 
 [build]
-dockerfile = "Dockerfile"
+image = "registry.gitlab.com/banter-bus/bookmarkey/api:latest"
 
 [env]
 
