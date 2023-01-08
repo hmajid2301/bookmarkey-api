@@ -4,3 +4,33 @@ tasks:
   start:
     cmds:
       - docker compose up --build -d
+
+  build:
+    cmds:
+      - go build -i -v cmd/server/bookmarkey/main.go
+
+  unit_test:
+    cmds:
+      - go test ./...
+
+  coverage:
+    cmds:
+      - go test -v 2>&1 ./... | go-junit-report -set-exit-code > report.xml
+      - gocover-cobertura < coverage.txt > coverage.xml
+
+  lint:
+    cmds:
+      - golangci-lint run {{.CLI_ARGS}}
+
+  format:
+    cmds:
+      - goimports -local gitlab.com/bookmarkey/api -w .
+
+  install_tools:
+    cmds:
+      - go mod download
+      - cat tools.go | grep _ | cut -d '"' -f2 | xargs -tI % go install %
+
+  install_pre_commit:
+    cmds:
+      - pre-commit install

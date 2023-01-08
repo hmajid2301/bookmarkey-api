@@ -1,3 +1,4 @@
+// +gocover:ignore:file ignore this file!
 package migrations
 
 import (
