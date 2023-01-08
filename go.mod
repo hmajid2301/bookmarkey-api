@@ -1,4 +1,4 @@
-module gitlab.com/banter-bus/bookmarkey/api
+module gitlab.com/bookmarkey/api
 
 go 1.19
 
