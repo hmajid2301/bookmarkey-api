@@ -2,6 +2,7 @@ include:
   - template: Jobs/Dependency-Scanning.gitlab-ci.yml
   - template: Security/License-Scanning.gitlab-ci.yml
   - template: Security/SAST.gitlab-ci.yml
+  - template: Code-Quality.gitlab-ci.yml
 
 image: golang:1.19
 
@@ -22,6 +23,7 @@ image: golang:1.19
 stages:
   - test
   - deploy
+  - notify
 
 format:
   extends:
@@ -34,12 +36,7 @@ lint:
   extends:
     - .task
   script:
-    - task lint -- --out-format code-climate:codequality.json,colored-line-number
-  artifacts:
-    when: always
-    expire_in: 1 week
-    reports:
-      codequality: codequality.json
+    - task lint
 
 test:coverage:
   only:
@@ -74,3 +71,25 @@ deploy:
     - docker build --cache-from ${CI_REGISTRY_IMAGE} -t ${CI_REGISTRY_IMAGE}:latest -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} -t ${CI_REGISTRY_IMAGE}:deploy .
     - docker push ${CI_REGISTRY_IMAGE} --all-tags
     - /root/.fly/bin/flyctl deploy
+
+notify:success:
+  stage: notify
+  only:
+    - main
+  before_script: []
+  script:
+    - wget https://raw.githubusercontent.com/hmajid2301/gitlab-ci-discord-webhook/master/send.sh
+    - chmod +x send.sh
+    - ./send.sh success "🚀 Succsesfully deployed to fly.io"
+  when: on_success
+
+notify:failurea:
+  stage: notify
+  only:
+    - main
+  before_script: []
+  script:
+    - wget https://raw.githubusercontent.com/hmajid2301/gitlab-ci-discord-webhook/master/send.sh
+    - chmod +x send.sh
+    - ./send.sh failure "❌ Failed to deploy to fly.io"
+  when: on_failure
