@@ -1,5 +1,7 @@
 run:
   timeout: 5m
+  skip-dirs:
+    - migrations
 
 linters:
   disable-all: true

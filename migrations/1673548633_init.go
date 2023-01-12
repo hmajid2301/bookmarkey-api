@@ -15,11 +15,11 @@ func init() {
 	isUser := "@request.auth.id != user"
 	collections := []*models.Collection{
 		{
-			Name:       "tag",
+			Name:       "tags",
 			Type:       models.CollectionTypeBase,
 			ListRule:   types.Pointer(isUserLoggedIn),
 			ViewRule:   types.Pointer(isUserLoggedIn),
-			CreateRule: nil,
+			CreateRule: types.Pointer(isUserLoggedIn),
 			UpdateRule: nil,
 			DeleteRule: nil,
 			Schema: schema.NewSchema(
@@ -37,7 +37,7 @@ func init() {
 		},
 
 		{
-			Name:       "bookmark",
+			Name:       "bookmarks",
 			Type:       models.CollectionTypeBase,
 			ListRule:   types.Pointer(isUser),
 			ViewRule:   types.Pointer(isUser),
@@ -51,7 +51,7 @@ func init() {
 					Required: true,
 					Options: &schema.RelationOptions{
 						MaxSelect:    nil,
-						CollectionId: "user",
+						CollectionId: "users",
 					},
 				},
 				&schema.SchemaField{
@@ -60,7 +60,7 @@ func init() {
 					Required: true,
 					Options: &schema.RelationOptions{
 						MaxSelect:    nil,
-						CollectionId: "collection",
+						CollectionId: "collections",
 					},
 				},
 				&schema.SchemaField{
@@ -79,7 +79,7 @@ func init() {
 		},
 
 		{
-			Name:       "collection",
+			Name:       "collections",
 			Type:       models.CollectionTypeBase,
 			ListRule:   types.Pointer(isUser),
 			ViewRule:   types.Pointer(isUser),
@@ -93,7 +93,7 @@ func init() {
 					Required: false,
 					Options: &schema.RelationOptions{
 						MaxSelect:    nil,
-						CollectionId: "collection",
+						CollectionId: "collections",
 					},
 				},
 				&schema.SchemaField{
@@ -111,20 +111,20 @@ func init() {
 					Required: true,
 					Options: &schema.RelationOptions{
 						MaxSelect:    nil,
-						CollectionId: "user",
+						CollectionId: "users",
 					},
 				},
 			),
 		},
 
 		{
-			Name:       "bookmark_tag",
+			Name:       "bookmark_tags",
 			Type:       models.CollectionTypeBase,
-			ListRule:   types.Pointer(isUser),
-			ViewRule:   types.Pointer(isUser),
+			ListRule:   types.Pointer("@request.auth.id != bookmark.user.id"),
+			ViewRule:   types.Pointer("@request.auth.id != bookmark.user.id"),
 			CreateRule: types.Pointer(isUserLoggedIn),
-			UpdateRule: types.Pointer(isUser),
-			DeleteRule: types.Pointer(isUser),
+			UpdateRule: types.Pointer("@request.auth.id != bookmark.user.id"),
+			DeleteRule: types.Pointer("@request.auth.id != bookmark.user.id"),
 			Schema: schema.NewSchema(
 				&schema.SchemaField{
 					Name:     "bookmark",
@@ -132,7 +132,7 @@ func init() {
 					Required: true,
 					Options: &schema.RelationOptions{
 						MaxSelect:    nil,
-						CollectionId: "bookmark",
+						CollectionId: "bookmarks",
 					},
 				},
 				&schema.SchemaField{
@@ -141,7 +141,7 @@ func init() {
 					Required: true,
 					Options: &schema.RelationOptions{
 						MaxSelect:    nil,
-						CollectionId: "tag",
+						CollectionId: "tags",
 					},
 				},
 			),
