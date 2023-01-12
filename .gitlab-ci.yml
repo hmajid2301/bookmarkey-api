@@ -83,7 +83,7 @@ notify:success:
     - ./send.sh success "🚀 Succsesfully deployed to fly.io"
   when: on_success
 
-notify:failurea:
+notify:failure:
   stage: notify
   only:
     - main

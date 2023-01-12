@@ -12,7 +12,7 @@ import (
 
 func init() {
 	isUserLoggedIn := "@request.auth.id != ''"
-	isUser := "@request.auth.id != user_id"
+	isUser := "@request.auth.id != user"
 	collections := []*models.Collection{
 		{
 			Name:       "tag",
@@ -46,7 +46,7 @@ func init() {
 			DeleteRule: types.Pointer(isUser),
 			Schema: schema.NewSchema(
 				&schema.SchemaField{
-					Name:     "user_id",
+					Name:     "user",
 					Type:     schema.FieldTypeRelation,
 					Required: true,
 					Options: &schema.RelationOptions{
@@ -55,7 +55,7 @@ func init() {
 					},
 				},
 				&schema.SchemaField{
-					Name:     "collection_id",
+					Name:     "collection",
 					Type:     schema.FieldTypeRelation,
 					Required: true,
 					Options: &schema.RelationOptions{
@@ -106,7 +106,7 @@ func init() {
 					},
 				},
 				&schema.SchemaField{
-					Name:     "user_id",
+					Name:     "user",
 					Type:     schema.FieldTypeRelation,
 					Required: true,
 					Options: &schema.RelationOptions{
@@ -127,7 +127,7 @@ func init() {
 			DeleteRule: types.Pointer(isUser),
 			Schema: schema.NewSchema(
 				&schema.SchemaField{
-					Name:     "bookmark_id",
+					Name:     "bookmark",
 					Type:     schema.FieldTypeRelation,
 					Required: true,
 					Options: &schema.RelationOptions{
@@ -136,7 +136,7 @@ func init() {
 					},
 				},
 				&schema.SchemaField{
-					Name:     "tag_id",
+					Name:     "tag",
 					Type:     schema.FieldTypeRelation,
 					Required: true,
 					Options: &schema.RelationOptions{

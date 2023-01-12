@@ -19,5 +19,4 @@ repos:
     hooks:
       - id: go-mod-tidy
       - id: go-imports
-        args: ["-l", "gitlab.com/bookmarkey/api"]
       - id: golangci-lint
