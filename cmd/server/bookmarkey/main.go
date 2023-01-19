@@ -6,6 +6,7 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 
+	"gitlab.com/bookmarkey/api/internal/collections"
 	_ "gitlab.com/bookmarkey/api/migrations"
 )
 
@@ -15,6 +16,8 @@ func main() {
 	migratecmd.MustRegister(app, app.RootCmd, &migratecmd.Options{
 		Automigrate: true,
 	})
+
+	collections.AddHandlers(app)
 
 	if err := app.Start(); err != nil {
 		log.Fatal(err)

@@ -6,6 +6,7 @@ require (
 	github.com/boumenot/gocover-cobertura v1.2.0
 	github.com/golangci/golangci-lint v1.50.1
 	github.com/jstemmer/go-junit-report/v2 v2.0.0
+	github.com/labstack/echo/v5 v5.0.0-20220201181537-ed2888cfa198
 	github.com/pocketbase/dbx v1.8.0
 	github.com/pocketbase/pocketbase v0.10.4
 	golang.org/x/tools v0.5.0
@@ -124,7 +125,6 @@ require (
 	github.com/kulti/thelper v0.6.3 // indirect
 	github.com/kunwardeep/paralleltest v1.0.6 // indirect
 	github.com/kyoh86/exportloopref v0.1.8 // indirect
-	github.com/labstack/echo/v5 v5.0.0-20220201181537-ed2888cfa198 // indirect
 	github.com/ldez/gomoddirectives v0.2.3 // indirect
 	github.com/ldez/tagliatelle v0.3.1 // indirect
 	github.com/leonklingele/grouper v1.1.0 // indirect

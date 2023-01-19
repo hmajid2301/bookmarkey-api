@@ -5,17 +5,25 @@ tasks:
     cmds:
       - docker compose up --build -d
 
+  start_test:
+    cmds:
+      - go run cmd/server/bookmarkey/main.go serve --dir tests/pb_data
+
   build:
     cmds:
       - go build -i -v cmd/server/bookmarkey/main.go
 
-  unit_test:
+  unit_tests:
     cmds:
       - go test ./...
 
+  integration_tests:
+    cmds:
+      - go test -tags=integration -v ./internal/...
+
   coverage:
     cmds:
-      - go test -v 2>&1 ./... | go-junit-report -set-exit-code > report.xml
+      - go test -coverprofile=coverage.txt -tags=integration -v ./internal/... | go-junit-report -set-exit-code > report.xml
       - gocover-cobertura < coverage.txt > coverage.xml
 
   lint:

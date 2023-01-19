@@ -38,6 +38,12 @@ lint:
   script:
     - task lint
 
+tests:integration:
+  extends:
+    - .task
+  script:
+    - task integration_tests
+
 test:coverage:
   only:
     - main
@@ -46,7 +52,6 @@ test:coverage:
     - .task
   script:
     - task coverage
-  allow_failure: true
   coverage: '/total:.*\d+.\d+%/'
   artifacts:
     when: always
@@ -80,7 +85,7 @@ notify:success:
   script:
     - wget https://raw.githubusercontent.com/hmajid2301/gitlab-ci-discord-webhook/master/send.sh
     - chmod +x send.sh
-    - ./send.sh success "🚀 Succsesfully deployed to fly.io"
+    - ./send.sh success "🚀 Successfully deployed to fly.io"
   when: on_success
 
 notify:failure:
