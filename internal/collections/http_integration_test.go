@@ -130,19 +130,6 @@ func TestAddCollection(t *testing.T) {
 			ExpectedContent: []string{"message", "The request requires valid record authorization token to be set."},
 			TestAppFactory:  setupTestApp,
 		},
-		//TODO: Fix this: https://github.com/pocketbase/pocketbase/discussions/1644
-		// {
-		// 	Name:   "Fail to add collection name already exists for that user",
-		// 	Method: http.MethodPost,
-		// 	Url:    "/collections",
-		// 	RequestHeaders: map[string]string{
-		// 		"Authorization": recordToken,
-		// 	},
-		// 	Body:            strings.NewReader(`{"collection_name": "software"}`),
-		// 	ExpectedStatus:  409,
-		// 	ExpectedContent: []string{"message", "A collection already exists with the name software."},
-		// 	TestAppFactory:  setupTestApp,
-		// },
 	}
 
 	for _, scenario := range scenarios {

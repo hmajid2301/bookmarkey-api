@@ -2,9 +2,7 @@ package collections
 
 import (
 	"errors"
-	"fmt"
 
-	"github.com/pocketbase/dbx"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"
@@ -35,29 +33,11 @@ func (s SQLiteStore) GetByID(id string) (*models.Record, error) {
 	return record, nil
 }
 
-// GetByName returns a record by name of collection
-func (s SQLiteStore) GetByName(name string, userID string) (*models.Record, error) {
-	query := dbx.HashExp{"user": []string{userID}, "name": name}
-	records, err := s.client.FindRecordsByExpr(collectionName, query)
-	if err != nil {
-		return nil, err
-	}
-	if len(records) < 1 {
-		return nil, fmt.Errorf("failed to find any records matching name %s and userID %s", name, userID)
-	}
-	return records[0], nil
-}
-
 // Add adds a new collection record
 func (s SQLiteStore) Add(name string, userID string) error {
 	collection, err := s.client.FindCollectionByNameOrId(collectionName)
 	if err != nil {
 		return err
-	}
-
-	existingRecord, _ := s.GetByName(name, userID)
-	if existingRecord != nil {
-		return ErrAlreadyExists
 	}
 
 	record := models.NewRecord(collection)
