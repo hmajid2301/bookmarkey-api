@@ -12,7 +12,7 @@ import (
 
 func init() {
 	isUserLoggedIn := "@request.auth.id != ''"
-	isUser := "@request.auth.id != user"
+	isUser := "@request.auth.id = user.id"
 	collections := []*models.Collection{
 		{
 			Name:       "tags",

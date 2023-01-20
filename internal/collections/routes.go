@@ -2,13 +2,12 @@ package collections
 
 import (
 	"github.com/labstack/echo/v5"
-	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 )
 
 // AddHandlers sets up the http handlers
-func AddHandlers(app *pocketbase.PocketBase) {
+func AddHandlers(app core.App) {
 	store := NewStore(app)
 	transport := NewTransport(store)
 

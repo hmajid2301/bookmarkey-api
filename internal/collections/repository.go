@@ -3,7 +3,7 @@ package collections
 import (
 	"errors"
 
-	"github.com/pocketbase/pocketbase"
+	"github.com/pocketbase/pocketbase/core"
 	"github.com/pocketbase/pocketbase/daos"
 	"github.com/pocketbase/pocketbase/models"
 )
@@ -19,7 +19,7 @@ type SQLiteStore struct {
 }
 
 // NewStore returns a new store to interact with the database
-func NewStore(app *pocketbase.PocketBase) SQLiteStore {
+func NewStore(app core.App) SQLiteStore {
 	client := app.Dao()
 	return SQLiteStore{client: client}
 }
