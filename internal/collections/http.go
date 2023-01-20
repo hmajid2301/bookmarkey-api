@@ -70,7 +70,8 @@ func (h Handler) AddCollection(c echo.Context) error {
 		return apis.NewApiError(http.StatusBadRequest, "Missing `collection_name` field in request.", nil)
 	}
 
-	if err := h.repo.Add(newCollection.Name, authRecord.Id); err != nil {
+	err = h.repo.Add(newCollection.Name, authRecord.Id)
+	if err != nil {
 		if errors.Is(err, ErrAlreadyExists) {
 			return apis.NewApiError(http.StatusConflict, fmt.Sprintf("A collection already exists with name the %s.", newCollection.Name), nil)
 

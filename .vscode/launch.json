@@ -10,7 +10,7 @@
       "request": "launch",
       "mode": "auto",
       "program": "${workspaceFolder}/cmd/server/bookmarkey/main.go",
-      "args": ["serve"]
+      "args": ["serve", "--http=0.0.0.0:8080"]
     }
   ]
 }

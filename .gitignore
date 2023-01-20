@@ -62,4 +62,4 @@ go.work
 configs/
 pb_data/
 !tests/pb_data
-
+__debug_bin

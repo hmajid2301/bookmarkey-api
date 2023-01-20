@@ -12,13 +12,16 @@ import (
 
 func main() {
 	app := pocketbase.New()
-
 	migratecmd.MustRegister(app, app.RootCmd, &migratecmd.Options{
 		Automigrate: true,
 	})
 
-	collections.AddHandlers(app)
+	err := app.Bootstrap()
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	collections.AddHandlers(app)
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
