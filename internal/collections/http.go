@@ -1,9 +1,6 @@
 package collections
 
 import (
-	"encoding/json"
-	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v5"
@@ -51,34 +48,4 @@ func (h Handler) DeleteCollection(c echo.Context) error {
 	}
 
 	return c.JSON(http.StatusOK, map[string]string{"name": collection.GetString("name"), "message": "Successfully deleted collection."})
-}
-
-// AddCollection add a users collections
-func (h Handler) AddCollection(c echo.Context) error {
-	authRecord, _ := c.Get(apis.ContextAuthRecordKey).(*models.Record)
-
-	type NewCollection struct {
-		Name string `json:"collection_name"`
-	}
-
-	newCollection := NewCollection{}
-	err := json.NewDecoder(c.Request().Body).Decode(&newCollection)
-	if err != nil {
-		return apis.NewApiError(http.StatusBadRequest, "Failed to decode payload when trying to add collection.", nil)
-	}
-	if newCollection.Name == "" {
-		return apis.NewApiError(http.StatusBadRequest, "Missing `collection_name` field in request.", nil)
-	}
-
-	err = h.repo.Add(newCollection.Name, authRecord.Id)
-	if err != nil {
-		if errors.Is(err, ErrAlreadyExists) {
-			return apis.NewApiError(http.StatusConflict, fmt.Sprintf("A collection already exists with name the %s.", newCollection.Name), nil)
-
-		}
-		// return err
-		return apis.NewApiError(http.StatusInternalServerError, "Failed to add collection.", nil)
-	}
-
-	return c.JSON(http.StatusOK, map[string]string{"name": newCollection.Name, "message": "Successfully created collection."})
 }

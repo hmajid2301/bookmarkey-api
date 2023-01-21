@@ -20,14 +20,4 @@ func AddHandlers(app core.App) {
 		)
 		return nil
 	})
-
-	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.POST("/collections", func(c echo.Context) error {
-			return transport.AddCollection(c)
-		},
-			apis.ActivityLogger(app),
-			apis.RequireRecordAuth(),
-		)
-		return nil
-	})
 }

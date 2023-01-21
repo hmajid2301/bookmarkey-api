@@ -5,7 +5,6 @@ package collections
 
 import (
 	"net/http"
-	"strings"
 	"testing"
 
 	"github.com/pocketbase/pocketbase/tests"
@@ -60,74 +59,6 @@ func TestDeleteCollection(t *testing.T) {
 			},
 			ExpectedStatus:  http.StatusForbidden,
 			ExpectedContent: []string{"message", "The user does not have permission to delete collection"},
-			TestAppFactory:  setupTestApp,
-		},
-	}
-
-	for _, scenario := range scenarios {
-		scenario.Test(t)
-	}
-}
-
-func TestAddCollection(t *testing.T) {
-	recordToken, err := generateRecordToken("users", "test@bookmarkey.app")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	setupTestApp := func() (*tests.TestApp, error) {
-		testApp, err := tests.NewTestApp(testDataDir)
-		if err != nil {
-			return nil, err
-		}
-
-		AddHandlers(testApp)
-		return testApp, nil
-	}
-
-	scenarios := []tests.ApiScenario{
-		{
-			Name:   "Successfully add collection",
-			Method: http.MethodPost,
-			Url:    "/collections",
-			RequestHeaders: map[string]string{
-				"Authorization": recordToken,
-			},
-			Body:            strings.NewReader(`{"collection_name": "newCollection"}`),
-			ExpectedStatus:  http.StatusOK,
-			ExpectedContent: []string{"name", "newCollection", "message", "Successfully created collection."},
-			ExpectedEvents:  map[string]int{"OnModelAfterCreate": 1, "OnModelBeforeCreate": 1},
-			TestAppFactory:  setupTestApp,
-		},
-		{
-			Name:   "Fail to add collection incorrect field name body",
-			Method: http.MethodPost,
-			Url:    "/collections",
-			RequestHeaders: map[string]string{
-				"Authorization": recordToken,
-			},
-			Body:            strings.NewReader(`{"collection": "newCollection"}`),
-			ExpectedStatus:  http.StatusBadRequest,
-			ExpectedContent: []string{"message", "Missing `collection_name` field in request."},
-			TestAppFactory:  setupTestApp,
-		},
-		{
-			Name:   "Fail to add collection no body",
-			Method: http.MethodPost,
-			Url:    "/collections",
-			RequestHeaders: map[string]string{
-				"Authorization": recordToken,
-			},
-			ExpectedStatus:  http.StatusBadRequest,
-			ExpectedContent: []string{"message", "Failed to decode payload when trying to add collection."},
-			TestAppFactory:  setupTestApp,
-		},
-		{
-			Name:            "Fail to add collection not authenticated",
-			Method:          http.MethodPost,
-			Url:             "/collections",
-			ExpectedStatus:  http.StatusUnauthorized,
-			ExpectedContent: []string{"message", "The request requires valid record authorization token to be set."},
 			TestAppFactory:  setupTestApp,
 		},
 	}
