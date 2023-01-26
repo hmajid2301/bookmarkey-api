@@ -88,10 +88,11 @@ deploy:production:
     - apk add curl
     - curl -L https://fly.io/install.sh | sh
   script:
+    - /root/.fly/bin/flyctl deploy --config ./fly.production.toml
+  after_script:
     - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
     - docker build --cache-from ${CI_REGISTRY_IMAGE} -t ${CI_REGISTRY_IMAGE}:latest -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} -t ${CI_REGISTRY_IMAGE}:deploy .
     - docker push ${CI_REGISTRY_IMAGE} --all-tags
-    - /root/.fly/bin/flyctl deploy --config ./fly.production.toml
 
 notify:success:
   stage: notify
