@@ -3,6 +3,8 @@ include:
   - template: Security/License-Scanning.gitlab-ci.yml
   - template: Security/SAST.gitlab-ci.yml
   - template: Code-Quality.gitlab-ci.yml
+  - project: "renovate-bot/renovate-runner"
+    file: "/templates/renovate-dind.gitlab-ci.yml"
 
 image: golang:1.19
 
@@ -65,6 +67,7 @@ deploy:preview:
   stage: deploy
   only:
     - merge_request
+  needs: []
   image: docker
   services:
     - docker:dind
