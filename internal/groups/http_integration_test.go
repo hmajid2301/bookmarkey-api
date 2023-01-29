@@ -1,7 +1,7 @@
 //go:build integration
 // +build integration
 
-package collections
+package groups
 
 import (
 	"net/http"
@@ -13,7 +13,7 @@ import (
 
 const testDataDir = "../../tests/pb_data"
 
-func TestDeleteCollection(t *testing.T) {
+func TestDeleteGroup(t *testing.T) {
 	recordToken, err := generateRecordToken("users", "test@bookmarkey.app")
 	if err != nil {
 		t.Fatal(err)
@@ -31,34 +31,34 @@ func TestDeleteCollection(t *testing.T) {
 
 	scenarios := []tests.ApiScenario{
 		{
-			Name:   "Successfully delete collection",
+			Name:   "Successfully delete group",
 			Method: http.MethodDelete,
-			Url:    "/collections/6oj42javvobz2fx",
+			Url:    "/groups/pj5pkjhytfrgpbp",
 			RequestHeaders: map[string]string{
 				"Authorization": recordToken,
 			},
 			ExpectedStatus:  http.StatusOK,
-			ExpectedContent: []string{"name", "software", "message", "Successfully deleted collection."},
+			ExpectedContent: []string{"name", "software", "message", "Successfully deleted group."},
 			ExpectedEvents:  map[string]int{"OnModelAfterDelete": 1, "OnModelBeforeDelete": 1},
 			TestAppFactory:  setupTestApp,
 		},
 		{
-			Name:            "Fail to delete collection not authenticated",
+			Name:            "Fail to delete group not authenticated",
 			Method:          http.MethodDelete,
-			Url:             "/collections/6oj42javvobz2fx",
+			Url:             "/groups/pj5pkjhytfrgpbp",
 			ExpectedStatus:  http.StatusUnauthorized,
 			ExpectedContent: []string{"message", "The request requires valid record authorization token to be set."},
 			TestAppFactory:  setupTestApp,
 		},
 		{
-			Name:   "Fail to delete collection belonging to another user",
+			Name:   "Fail to delete group belonging to another user",
 			Method: http.MethodDelete,
-			Url:    "/collections/jxy347gnqxxm62w",
+			Url:    "/groups/9nt5kjo8krf299o",
 			RequestHeaders: map[string]string{
 				"Authorization": recordToken,
 			},
 			ExpectedStatus:  http.StatusForbidden,
-			ExpectedContent: []string{"message", "The user does not have permission to delete collection"},
+			ExpectedContent: []string{"message", "The user does not have permission to delete group"},
 			TestAppFactory:  setupTestApp,
 		},
 	}
@@ -68,6 +68,7 @@ func TestDeleteCollection(t *testing.T) {
 	}
 }
 
+// TODO: generalise
 func generateRecordToken(collectionNameOrId string, email string) (string, error) {
 	app, err := tests.NewTestApp(testDataDir)
 	if err != nil {

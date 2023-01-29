@@ -1,4 +1,4 @@
-package collections
+package groups
 
 import (
 	"net/http"
@@ -26,25 +26,25 @@ func NewTransport(repo Repository) Handler {
 	}
 }
 
-// DeleteCollection delete a users collections given a user ID
-func (h Handler) DeleteCollection(c echo.Context) error {
+// DeleteGroup delete a users groups given a user ID
+func (h Handler) DeleteGroup(c echo.Context) error {
 	authRecord, _ := c.Get(apis.ContextAuthRecordKey).(*models.Record)
 
-	collection, err := h.repo.GetByID(c.PathParam("id"))
+	group, err := h.repo.GetByID(c.PathParam("id"))
 	if err != nil {
 		return err
 	}
 
-	collectionOwner := collection.GetStringSlice("user")[0]
-	if authRecord.Id != collectionOwner {
-		return apis.NewForbiddenError("The user does not have permission to delete collection.", nil)
+	groupOwner := group.GetStringSlice("user")[0]
+	if authRecord.Id != groupOwner {
+		return apis.NewForbiddenError("The user does not have permission to delete group.", nil)
 	}
 
-	if err := h.repo.Delete(collection); err != nil {
+	if err := h.repo.Delete(group); err != nil {
 		// TODO: Log error properly
 		// return err
-		return apis.NewApiError(http.StatusInternalServerError, "Failed to delete collection.", nil)
+		return apis.NewApiError(http.StatusInternalServerError, "Failed to delete group.", nil)
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"name": collection.GetString("name"), "message": "Successfully deleted collection."})
+	return c.JSON(http.StatusOK, map[string]string{"name": group.GetString("name"), "message": "Successfully deleted group."})
 }

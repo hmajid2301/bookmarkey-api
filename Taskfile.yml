@@ -15,7 +15,7 @@ tasks:
 
   start_test:
     cmds:
-      - go run cmd/server/bookmarkey/main.go serve --dir tests/pb_data
+      - go run cmd/server/bookmarkey/main.go serve --dir tests/pb_data  --http=localhost:8080
 
   unit_tests:
     cmds:

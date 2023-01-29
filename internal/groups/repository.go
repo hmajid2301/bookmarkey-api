@@ -1,4 +1,4 @@
-package collections
+package groups
 
 import (
 	"github.com/pocketbase/pocketbase/core"
@@ -6,7 +6,7 @@ import (
 	"github.com/pocketbase/pocketbase/models"
 )
 
-const collectionName = "collections"
+const collectionName = "groups"
 
 // SQLiteStore used to interact with DB
 type SQLiteStore struct {
@@ -28,7 +28,7 @@ func (s SQLiteStore) GetByID(id string) (*models.Record, error) {
 	return record, nil
 }
 
-// Delete removes a collection record
+// Delete removes a group record
 func (s SQLiteStore) Delete(record *models.Record) error {
 	err := s.client.DeleteRecord(record)
 	if err != nil {
