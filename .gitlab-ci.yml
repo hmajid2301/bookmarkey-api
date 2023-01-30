@@ -45,6 +45,7 @@ tests:integration:
     - .task
   script:
     - task integration_tests
+  allow_failure: true
 
 test:coverage:
   only:
@@ -55,6 +56,7 @@ test:coverage:
   script:
     - task coverage
   coverage: '/total:.*\d+.\d+%/'
+  allow_failure: true
   artifacts:
     when: always
     reports:

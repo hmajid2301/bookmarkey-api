@@ -6,8 +6,6 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 
-	"gitlab.com/bookmarkey/api/internal/collections"
-	"gitlab.com/bookmarkey/api/internal/groups"
 	_ "gitlab.com/bookmarkey/api/migrations"
 )
 
@@ -22,8 +20,6 @@ func main() {
 		log.Fatal(err)
 	}
 
-	collections.AddHandlers(app)
-	groups.AddHandlers(app)
 	if err := app.Start(); err != nil {
 		log.Fatal(err)
 	}
