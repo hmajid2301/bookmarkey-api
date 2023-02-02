@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
+	"os"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 
@@ -15,12 +17,17 @@ func main() {
 		Automigrate: true,
 	})
 
-	err := app.Bootstrap()
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:              os.Getenv("SENTRY_DSN"),
+		Environment:      os.Getenv("ENV"),
+		TracesSampleRate: 1.0,
+	})
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("failed to start Sentry: %s", err)
 	}
 
 	if err := app.Start(); err != nil {
+		sentry.CaptureException(err)
 		log.Fatal(err)
 	}
 }

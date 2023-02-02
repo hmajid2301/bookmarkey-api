@@ -7,6 +7,7 @@ processes = []
 [build]
 
 [env]
+ENV = "preview"
 
 [experimental]
 allowed_public_ports = []

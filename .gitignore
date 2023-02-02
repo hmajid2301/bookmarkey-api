@@ -59,7 +59,7 @@ go.work
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/go,visualstudiocode,linux
-configs/
 pb_data/
 !tests/pb_data/data.db
 __debug_bin
+.env
