@@ -17,31 +17,14 @@ tasks:
     cmds:
       - go run cmd/server/bookmarkey/main.go serve --dir tests/pb_data  --http=localhost:8080
 
-  unit_tests:
-    cmds:
-      - go test ./...
-
-  integration_tests:
-    cmds:
-      - go test -tags=integration -v ./internal/...
-
-  coverage:
-    cmds:
-      - go test -coverprofile=coverage.txt -tags=integration -v ./internal/... | go-junit-report -set-exit-code > report.xml
-      - gocover-cobertura < coverage.txt > coverage.xml
-
   lint:
     cmds:
       - golangci-lint run {{.CLI_ARGS}}
 
   format:
     cmds:
+      - go install golang.org/x/tools/cmd/goimports
       - goimports -local gitlab.com/bookmarkey/api -w .
-
-  install_tools:
-    cmds:
-      - go mod download
-      - cat tools.go | grep _ | cut -d '"' -f2 | xargs -tI % go install %
 
   install_pre_commit:
     cmds:

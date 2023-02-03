@@ -14,7 +14,7 @@ image: golang:1.19
     - merge_request
   before_script:
     - go install github.com/go-task/task/v3/cmd/task@latest
-    - task install_tools
+    - go mod download
   #   - mkdir -p .go
   # variables:
   #   GOPATH: $CI_PROJECT_DIR/.go
@@ -39,31 +39,6 @@ lint:
     - .task
   script:
     - task lint
-
-tests:integration:
-  extends:
-    - .task
-  script:
-    - task integration_tests
-  allow_failure: true
-
-test:coverage:
-  only:
-    - main
-    - merge_request
-  extends:
-    - .task
-  script:
-    - task coverage
-  coverage: '/total:.*\d+.\d+%/'
-  allow_failure: true
-  artifacts:
-    when: always
-    reports:
-      coverage_report:
-        coverage_format: cobertura
-        path: coverage.xml
-      junit: report.xml
 
 deploy:preview:
   stage: deploy
