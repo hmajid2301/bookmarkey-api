@@ -24,6 +24,7 @@ stages:
   - test
   - deploy
   - notify
+  - release
 
 format:
   extends:
@@ -90,3 +91,21 @@ notify:failure:
     - chmod +x send.sh
     - ./send.sh failure "❌ Failed to deploy to fly.io"
   when: on_failure
+
+release:sentry:
+  stage: release
+  only:
+    - main
+  image:
+    name: getsentry/sentry-cli
+    entrypoint: [""]
+  variables:
+    SENTRY_ORG: bookmarkey
+    SENTRY_PROJECT: api
+  dependencies:
+    - "deploy:preview"
+  script:
+    - sentry-cli releases new "$CI_COMMIT_SHA"
+    - sentry-cli releases set-commits "$CI_COMMIT_SHA" --auto
+    - sentry-cli releases finalize "$CI_COMMIT_SHA"
+    - sentry-cli releases deploys "$CI_COMMIT_SHA" new -e production

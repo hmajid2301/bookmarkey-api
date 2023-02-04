@@ -7,7 +7,7 @@ processes = []
 [build]
 
 [env]
-ENV = "preview"
+ENV = "deploy-preview"
 
 [experimental]
 allowed_public_ports = []
