@@ -1,7 +1,13 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:base"],
-  "labels": ["dependencies"],
+  "extends": [
+    "config:base",
+    "group:allNonMajor",
+    ":automergeMinor",
+    ":automergePatch"
+  ],
+  "labels": ["Rennovate"],
+  "postUpdateOptions": ["gomodTidy"],
   "hostRules": [
     {
       "matchHost": "api.github.com",
@@ -9,16 +15,6 @@
       "maxRequestsPerSecond": 8
     }
   ],
-  "packageRules": [
-    {
-      "matchDepTypes": [
-        "devDependencies",
-        ":separateMajorReleases",
-        ":combinePatchMinorReleases",
-        ":ignoreUnstable",
-        "group:allNonMajor"
-      ],
-      "automerge": true
-    }
-  ]
+  "platformAutomerge": true,
+  "dependencyDashboardAutoclose": true
 }
