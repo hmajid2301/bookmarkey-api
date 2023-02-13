@@ -3,7 +3,7 @@ module gitlab.com/bookmarkey/api
 go 1.20
 
 require (
-	github.com/getsentry/sentry-go v0.17.0
+	github.com/getsentry/sentry-go v0.18.0
 	github.com/pocketbase/dbx v1.9.0
 	github.com/pocketbase/pocketbase v0.12.3
 )
