@@ -8,6 +8,7 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 
+	"gitlab.com/bookmarkey/api/internal/bookmarks"
 	_ "gitlab.com/bookmarkey/api/migrations"
 )
 
@@ -25,6 +26,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to start Sentry: %s", err)
 	}
+
+	bookmarks.AddHandlers(app)
 
 	if err := app.Start(); err != nil {
 		sentry.CaptureException(err)

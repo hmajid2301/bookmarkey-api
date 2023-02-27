@@ -3,13 +3,17 @@ module gitlab.com/bookmarkey/api
 go 1.20
 
 require (
+	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/getsentry/sentry-go v0.18.0
+	github.com/go-playground/validator/v10 v10.11.2
+	github.com/labstack/echo/v5 v5.0.0-20220201181537-ed2888cfa198
 	github.com/pocketbase/dbx v1.10.0
 	github.com/pocketbase/pocketbase v0.13.0
 )
 
 require (
 	github.com/AlecAivazis/survey/v2 v2.3.6 // indirect
+	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/aws/aws-sdk-go v1.44.209 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.17.5 // indirect
@@ -38,6 +42,8 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.1 // indirect
 	github.com/ganigeorgiev/fexpr v0.3.0 // indirect
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
@@ -48,7 +54,7 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
-	github.com/labstack/echo/v5 v5.0.0-20220201181537-ed2888cfa198 // indirect
+	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mattn/go-sqlite3 v1.14.16 // indirect
