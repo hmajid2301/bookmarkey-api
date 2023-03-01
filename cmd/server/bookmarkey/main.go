@@ -27,6 +27,11 @@ func main() {
 		log.Fatalf("failed to start Sentry: %s", err)
 	}
 
+	err = app.Bootstrap()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	bookmarks.AddHandlers(app)
 
 	if err := app.Start(); err != nil {

@@ -54,7 +54,7 @@ func (s SQLiteStore) Create(metadata BookmarkMetaData, collectionID string) erro
 		}
 
 		bookmarkRecord := models.NewRecord(collection)
-		bookmarkRecord.Set("bookmark_metadata", metadataRecord.Id)
+		bookmarkRecord.Set("bookmark_metadata", []string{metadataRecord.Id})
 		bookmarkRecord.Set("favourite", false)
 		bookmarkRecord.Set("collection", collectionID)
 		bookmarkRecord.Set("custom_order", math.MaxInt32)
