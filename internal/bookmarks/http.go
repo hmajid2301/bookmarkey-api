@@ -2,6 +2,7 @@ package bookmarks
 
 import (
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/go-playground/validator/v10"
@@ -63,8 +64,12 @@ func (h Handler) CreateBookmark(c echo.Context) error {
 	collectionID := c.PathParam(("id"))
 	err := h.service.Create(b.URL, collectionID, authRecord.Id)
 
-	if errors.Is(err, ErrNotAuthorized) {
-		return apis.NewForbiddenError(err.Error(), nil)
+	if err != nil {
+		log.Panicln("failed to create bookmark: %w", err)
+		if errors.Is(err, ErrNotAuthorized) {
+			return apis.NewForbiddenError(err.Error(), nil)
+		}
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create bookmark")
 	}
 
 	return c.NoContent(http.StatusCreated)
