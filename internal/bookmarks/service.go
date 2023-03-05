@@ -3,6 +3,7 @@ package bookmarks
 import (
 	"errors"
 	"net/http"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -60,7 +61,10 @@ func (s Service) Create(url, collectionID, userID string) error {
 
 func (Service) getMetadata(url string) (BookmarkMetaData, error) {
 	metadata := BookmarkMetaData{url: url}
-	res, err := http.Get(url)
+	client := http.Client{
+		Timeout: 5 * time.Second,
+	}
+	res, err := client.Get(url)
 	if err != nil {
 		return metadata, err
 	}

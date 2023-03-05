@@ -46,6 +46,20 @@ func TestCreateBookmark(t *testing.T) {
 			TestAppFactory: setupTestApp,
 		},
 		{
+			Name:   "Successfully create bookmark, update bookmark metadata url exists",
+			Method: http.MethodPost,
+			Url:    "/collections/6oj42javvobz2fx/bookmark",
+			Body: strings.NewReader(`{
+				"url": "https://wiki.guildwars2.com/wiki/Event_timers"
+			}`),
+			RequestHeaders: map[string]string{
+				"Authorization": recordToken,
+			},
+			ExpectedStatus: http.StatusCreated,
+			ExpectedEvents: map[string]int{"OnModelAfterCreate": 1, "OnModelAfterUpdate": 1, "OnModelBeforeCreate": 1, "OnModelBeforeUpdate": 1},
+			TestAppFactory: setupTestApp,
+		},
+		{
 			Name:   "Fail to create bookmark invalid payload",
 			Method: http.MethodPost,
 			Url:    "/collections/6oj42javvobz2fx/bookmark",

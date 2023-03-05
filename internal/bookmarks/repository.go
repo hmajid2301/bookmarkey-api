@@ -43,7 +43,10 @@ func (s SQLiteStore) Create(metadata BookmarkMetaData, collectionID string) erro
 	}
 
 	s.client.RunInTransaction(func(txDao *daos.Dao) error {
-		metadataRecord := models.NewRecord(metadataCollection)
+		metadataRecord, err := txDao.FindFirstRecordByData(metaCollectionName, "url", metadata.url)
+		if err != nil {
+			metadataRecord = models.NewRecord(metadataCollection)
+		}
 		metadataRecord.Set("title", metadata.title)
 		metadataRecord.Set("description", metadata.description)
 		metadataRecord.Set("image", metadata.image)

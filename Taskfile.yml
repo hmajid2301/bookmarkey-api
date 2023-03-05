@@ -9,7 +9,7 @@ tasks:
     cmds:
       - go run cmd/server/bookmarkey/main.go serve --http=localhost:8080
 
-  start_docker:
+  start:docker:
     cmds:
       - docker compose up --build -d
 
@@ -22,7 +22,7 @@ tasks:
       - go install golang.org/x/tools/cmd/goimports
       - goimports -local gitlab.com/bookmarkey/api -w .
 
-  install_pre_commit:
+  install:precommit:
     cmds:
       - pre-commit install
 
