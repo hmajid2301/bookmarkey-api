@@ -31,13 +31,13 @@ func NewStore(app core.App) SQLiteStore {
 }
 
 // Create creates a new Bookmark and BookmarkMeta entry in the database
-func (s SQLiteStore) Create(metadata BookmarkMetaData, collectionID string) error {
+func (s SQLiteStore) Create(metadata BookmarkMetaData, collectionID string, userID string) error {
 	metadataCollection, err := s.client.FindCollectionByNameOrId(metaCollectionName)
 	if err != nil {
 		return err
 	}
 
-	collection, err := s.client.FindCollectionByNameOrId(collectionName)
+	bookmarkCollection, err := s.client.FindCollectionByNameOrId(collectionName)
 	if err != nil {
 		return err
 	}
@@ -56,10 +56,11 @@ func (s SQLiteStore) Create(metadata BookmarkMetaData, collectionID string) erro
 			return err
 		}
 
-		bookmarkRecord := models.NewRecord(collection)
+		bookmarkRecord := models.NewRecord(bookmarkCollection)
 		bookmarkRecord.Set("bookmark_metadata", []string{metadataRecord.Id})
+		bookmarkRecord.Set("user", []string{userID})
 		bookmarkRecord.Set("favourite", false)
-		bookmarkRecord.Set("collection", collectionID)
+		bookmarkRecord.Set("collection", []string{collectionID})
 		bookmarkRecord.Set("custom_order", math.MaxInt32)
 
 		if err := txDao.SaveRecord(bookmarkRecord); err != nil {

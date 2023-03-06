@@ -8,6 +8,8 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+const unsortedCollection = "-1"
+
 // CollectionService is used to interact with the collection service
 type CollectionService interface {
 	IsCollectionOwnedBy(collectionID string, userID string) (bool, error)
@@ -15,7 +17,7 @@ type CollectionService interface {
 
 // Repository is an interface for interacting with the database
 type Repository interface {
-	Create(metadata BookmarkMetaData, collectionID string) error
+	Create(metadata BookmarkMetaData, collectionID string, userID string) error
 }
 
 // Service used to interact with the bookmark
@@ -37,13 +39,14 @@ var ErrNotAuthorized = errors.New("user does not have permission to create bookm
 
 // Create used to create a new bookmark
 func (s Service) Create(url, collectionID, userID string) error {
-	ownedBy, err := s.collectionSrv.IsCollectionOwnedBy(collectionID, userID)
-	if err != nil {
-		return err
-	}
-
-	if !ownedBy {
-		return ErrNotAuthorized
+	if collectionID != unsortedCollection {
+		ownedBy, err := s.collectionSrv.IsCollectionOwnedBy(collectionID, userID)
+		if err != nil {
+			return err
+		}
+		if !ownedBy {
+			return ErrNotAuthorized
+		}
 	}
 
 	metadata, err := s.getMetadata(url)
@@ -51,7 +54,7 @@ func (s Service) Create(url, collectionID, userID string) error {
 		return err
 	}
 
-	err = s.repo.Create(metadata, collectionID)
+	err = s.repo.Create(metadata, collectionID, userID)
 	if err != nil {
 		return err
 	}

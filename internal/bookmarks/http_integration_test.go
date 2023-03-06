@@ -46,6 +46,20 @@ func TestCreateBookmark(t *testing.T) {
 			TestAppFactory: setupTestApp,
 		},
 		{
+			Name:   "Successfully create bookmark, unsorted",
+			Method: http.MethodPost,
+			Url:    "/collections/-1/bookmark",
+			Body: strings.NewReader(`{
+				"url": "https://blog.pragmaticengineer.com/"
+			}`),
+			RequestHeaders: map[string]string{
+				"Authorization": recordToken,
+			},
+			ExpectedStatus: http.StatusCreated,
+			ExpectedEvents: map[string]int{"OnModelAfterCreate": 2, "OnModelBeforeCreate": 2},
+			TestAppFactory: setupTestApp,
+		},
+		{
 			Name:   "Successfully create bookmark, update bookmark metadata url exists",
 			Method: http.MethodPost,
 			Url:    "/collections/6oj42javvobz2fx/bookmark",
