@@ -15,7 +15,13 @@ func init() {
 		if err != nil {
 			return err
 		}
-		record := models.NewRecord(collection)
+
+		record, err := dao.FindRecordById("pejwlxcamufi2z9", "-1")
+		if err == nil {
+			return err
+		}
+
+		record = models.NewRecord(collection)
 		record.Set("id", "-1")
 		record.Set("name", "Unsorted Bookmarks")
 		return dao.SaveRecord(record)
