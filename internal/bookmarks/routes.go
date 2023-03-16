@@ -2,7 +2,6 @@ package bookmarks
 
 import (
 	"github.com/labstack/echo/v5"
-	"github.com/labstack/echo/v5/middleware"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/core"
 	"gitlab.com/bookmarkey/api/internal/collections"
@@ -18,8 +17,6 @@ func AddHandlers(app core.App) {
 	transport := NewTransport(srv)
 
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		// TODO: move to generic i.e. main
-		e.Router.Use(middleware.Logger())
 		e.Router.POST("/collections/:id/bookmark", func(c echo.Context) error {
 			return transport.CreateBookmark(c)
 		},

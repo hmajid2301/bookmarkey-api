@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-playground/validator/v10"
+	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/models"
@@ -33,26 +33,14 @@ type NewBookmark struct {
 	URL string `json:"url" validate:"required,url"`
 }
 
-// CustomValidator enables us to use the validator package
-type CustomValidator struct {
-	validator *validator.Validate
-}
-
-// Validate used to validate our HTTP payloads depending on the `validate` struct tags
-func (cv *CustomValidator) Validate(i interface{}) error {
-	if err := cv.validator.Struct(i); err != nil {
-		// Optionally, you could return the error to give each route more control over the status code
-		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-	}
-	return nil
-}
-
 // CreateBookmark used to create a new bookmark in the app
 func (h Handler) CreateBookmark(c echo.Context) error {
 	authRecord, _ := c.Get(apis.ContextAuthRecordKey).(*models.Record)
 
-	// TODO: move to main function ?
-	c.Echo().Validator = &CustomValidator{validator: validator.New()}
+	sentry.ConfigureScope(func(scope *sentry.Scope) {
+		scope.SetUser(sentry.User{ID: authRecord.Id})
+	})
+
 	b := new(NewBookmark)
 	if err := c.Bind(b); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -66,6 +54,7 @@ func (h Handler) CreateBookmark(c echo.Context) error {
 
 	if err != nil {
 		log.Panicln("failed to create bookmark: %w", err)
+		sentry.CaptureException(err)
 		if errors.Is(err, ErrNotAuthorized) {
 			return apis.NewForbiddenError(err.Error(), nil)
 		}
