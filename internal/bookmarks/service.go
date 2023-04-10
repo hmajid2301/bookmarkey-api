@@ -17,7 +17,8 @@ type CollectionService interface {
 
 // Repository is an interface for interacting with the database
 type Repository interface {
-	Create(metadata BookmarkMetaData, collectionID string, userID string) error
+	Create(metadata *BookmarkMetaData, collectionID string, userID string) error
+	GetByURL(url string) (*BookmarkMetaData, error)
 }
 
 // Service used to interact with the bookmark
@@ -49,7 +50,7 @@ func (s Service) Create(url, collectionID, userID string) error {
 		}
 	}
 
-	metadata, err := s.getMetadata(url)
+	metadata, err := s.GetMetadata(url)
 	if err != nil {
 		return err
 	}
@@ -62,8 +63,14 @@ func (s Service) Create(url, collectionID, userID string) error {
 	return nil
 }
 
-func (Service) getMetadata(url string) (BookmarkMetaData, error) {
-	metadata := BookmarkMetaData{url: url}
+// GetMetadata returns the metadata for a URL.
+func (s Service) GetMetadata(url string) (*BookmarkMetaData, error) {
+	bookmarkMetadata, err := s.repo.GetByURL(url)
+	if err == nil {
+		return bookmarkMetadata, nil
+	}
+
+	metadata := &BookmarkMetaData{URL: url}
 	client := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -80,13 +87,13 @@ func (Service) getMetadata(url string) (BookmarkMetaData, error) {
 
 	doc.Find("meta").Each(func(i int, s *goquery.Selection) {
 		if property, _ := s.Attr("property"); property == "og:description" {
-			metadata.description, _ = s.Attr("content")
+			metadata.Description, _ = s.Attr("content")
 		}
 		if property, _ := s.Attr("property"); property == "og:image" {
-			metadata.image, _ = s.Attr("content")
+			metadata.Image, _ = s.Attr("content")
 		}
 		if property, _ := s.Attr("property"); property == "og:title" {
-			metadata.title, _ = s.Attr("content")
+			metadata.Title, _ = s.Attr("content")
 		}
 	})
 	return metadata, nil

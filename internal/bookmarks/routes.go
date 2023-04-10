@@ -23,6 +23,12 @@ func AddHandlers(app core.App) {
 			apis.ActivityLogger(app),
 			apis.RequireRecordAuth(),
 		)
+		e.Router.GET("/bookmark/metadata", func(c echo.Context) error {
+			return transport.GetURLMetadata(c)
+		},
+			apis.ActivityLogger(app),
+			apis.RequireRecordAuth(),
+		)
 		return nil
 	})
 }

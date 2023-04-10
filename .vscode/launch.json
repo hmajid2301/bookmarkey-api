@@ -16,6 +16,19 @@
         "--dir",
         "/home/haseeb/projects/bookmarkey/gui/pb_data"
       ]
+    },
+    {
+      "name": "Start Test Webservice",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}/cmd/server/bookmarkey/main.go",
+      "args": [
+        "serve",
+        "--http=0.0.0.0:8080",
+        "--dir",
+        "../../../tests/pb_data"
+      ]
     }
   ]
 }

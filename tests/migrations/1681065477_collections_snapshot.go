@@ -34,6 +34,7 @@ func init() {
 						}
 					}
 				],
+				"indexes": [],
 				"listRule": "@request.auth.id != ''",
 				"viewRule": "@request.auth.id != ''",
 				"createRule": "@request.auth.id != ''",
@@ -44,7 +45,7 @@ func init() {
 			{
 				"id": "tg5uixgnz32nmqj",
 				"created": "2023-01-21 18:42:07.322Z",
-				"updated": "2023-02-26 18:52:21.393Z",
+				"updated": "2023-04-09 18:37:57.160Z",
 				"name": "bookmarks",
 				"type": "base",
 				"system": false,
@@ -54,11 +55,12 @@ func init() {
 						"id": "sabinmy4",
 						"name": "collection",
 						"type": "relation",
-						"required": true,
+						"required": false,
 						"unique": false,
 						"options": {
 							"collectionId": "pejwlxcamufi2z9",
 							"cascadeDelete": false,
+							"minSelect": null,
 							"maxSelect": 1,
 							"displayFields": null
 						}
@@ -93,41 +95,47 @@ func init() {
 						"unique": false,
 						"options": {
 							"collectionId": "elul616p7fivid4",
+							"cascadeDelete": true,
+							"minSelect": null,
+							"maxSelect": 1,
+							"displayFields": []
+						}
+					},
+					{
+						"system": false,
+						"id": "v9ncctkk",
+						"name": "user",
+						"type": "relation",
+						"required": true,
+						"unique": false,
+						"options": {
+							"collectionId": "_pb_users_auth_",
 							"cascadeDelete": false,
+							"minSelect": null,
 							"maxSelect": 1,
 							"displayFields": []
 						}
 					}
 				],
-				"listRule": "@request.auth.id = collection.user.id",
-				"viewRule": "@request.auth.id = collection.user.id",
+				"indexes": [
+					"CREATE INDEX ` + "`" + `_tg5uixgnz32nmqj_created_idx` + "`" + ` ON ` + "`" + `bookmarks` + "`" + ` (` + "`" + `created` + "`" + `)",
+					"CREATE INDEX ` + "`" + `idx_xXZ0Flu` + "`" + ` ON ` + "`" + `bookmarks` + "`" + ` (` + "`" + `user` + "`" + `)"
+				],
+				"listRule": "@request.auth.id = user.id",
+				"viewRule": "@request.auth.id = user.id",
 				"createRule": "@request.auth.id != ''",
-				"updateRule": "@request.auth.id = collection.user.id",
-				"deleteRule": "@request.auth.id = collection.user.id",
+				"updateRule": "@request.auth.id = user.id",
+				"deleteRule": "@request.auth.id = user.id",
 				"options": {}
 			},
 			{
 				"id": "pejwlxcamufi2z9",
 				"created": "2023-01-21 18:42:07.322Z",
-				"updated": "2023-01-29 16:13:04.867Z",
+				"updated": "2023-04-09 18:37:57.161Z",
 				"name": "collections",
 				"type": "base",
 				"system": false,
 				"schema": [
-					{
-						"system": false,
-						"id": "awpaxjtv",
-						"name": "parent",
-						"type": "relation",
-						"required": false,
-						"unique": false,
-						"options": {
-							"collectionId": "pejwlxcamufi2z9",
-							"cascadeDelete": false,
-							"maxSelect": 1,
-							"displayFields": null
-						}
-					},
 					{
 						"system": false,
 						"id": "v7sahbbo",
@@ -151,6 +159,7 @@ func init() {
 						"options": {
 							"collectionId": "_pb_users_auth_",
 							"cascadeDelete": false,
+							"minSelect": null,
 							"maxSelect": 1,
 							"displayFields": null
 						}
@@ -165,6 +174,7 @@ func init() {
 						"options": {
 							"collectionId": "xowwnq4hswfdsci",
 							"cascadeDelete": false,
+							"minSelect": null,
 							"maxSelect": 1,
 							"displayFields": null
 						}
@@ -182,8 +192,13 @@ func init() {
 						}
 					}
 				],
-				"listRule": "@request.auth.id = user.id",
-				"viewRule": "@request.auth.id = user.id",
+				"indexes": [
+					"CREATE INDEX ` + "`" + `_pejwlxcamufi2z9_created_idx` + "`" + ` ON ` + "`" + `collections` + "`" + ` (` + "`" + `created` + "`" + `)",
+					"CREATE INDEX ` + "`" + `idx_CreVYUz` + "`" + ` ON ` + "`" + `collections` + "`" + ` (` + "`" + `user` + "`" + `)",
+					"CREATE INDEX ` + "`" + `idx_hT589R8` + "`" + ` ON ` + "`" + `collections` + "`" + ` (` + "`" + `group` + "`" + `)"
+				],
+				"listRule": "@request.auth.id = user.id || id = \"-1\"",
+				"viewRule": "@request.auth.id = user.id || id = \"-1\"",
 				"createRule": "@request.auth.id != ''",
 				"updateRule": "@request.auth.id = user.id",
 				"deleteRule": "@request.auth.id = user.id",
@@ -192,7 +207,7 @@ func init() {
 			{
 				"id": "w4u7mhgxrb2z1nq",
 				"created": "2023-01-21 18:42:07.323Z",
-				"updated": "2023-01-21 18:42:07.323Z",
+				"updated": "2023-04-09 18:37:57.161Z",
 				"name": "bookmark_tags",
 				"type": "base",
 				"system": false,
@@ -207,6 +222,7 @@ func init() {
 						"options": {
 							"collectionId": "tg5uixgnz32nmqj",
 							"cascadeDelete": false,
+							"minSelect": null,
 							"maxSelect": null,
 							"displayFields": null
 						}
@@ -221,10 +237,15 @@ func init() {
 						"options": {
 							"collectionId": "0rkrqvkbrwzy4z1",
 							"cascadeDelete": false,
+							"minSelect": null,
 							"maxSelect": null,
 							"displayFields": null
 						}
 					}
+				],
+				"indexes": [
+					"CREATE INDEX ` + "`" + `_w4u7mhgxrb2z1nq_created_idx` + "`" + ` ON ` + "`" + `bookmark_tags` + "`" + ` (` + "`" + `created` + "`" + `)",
+					"CREATE INDEX ` + "`" + `idx_tuLF8zZ` + "`" + ` ON ` + "`" + `bookmark_tags` + "`" + ` (` + "`" + `bookmark` + "`" + `)"
 				],
 				"listRule": "@request.auth.id != bookmark.user.id",
 				"viewRule": "@request.auth.id != bookmark.user.id",
@@ -236,7 +257,7 @@ func init() {
 			{
 				"id": "xowwnq4hswfdsci",
 				"created": "2023-01-21 19:11:06.955Z",
-				"updated": "2023-01-29 16:13:04.867Z",
+				"updated": "2023-04-09 18:37:57.162Z",
 				"name": "groups",
 				"type": "base",
 				"system": false,
@@ -251,6 +272,7 @@ func init() {
 						"options": {
 							"collectionId": "_pb_users_auth_",
 							"cascadeDelete": false,
+							"minSelect": null,
 							"maxSelect": 1,
 							"displayFields": null
 						}
@@ -281,6 +303,10 @@ func init() {
 						}
 					}
 				],
+				"indexes": [
+					"CREATE INDEX ` + "`" + `_xowwnq4hswfdsci_created_idx` + "`" + ` ON ` + "`" + `groups` + "`" + ` (` + "`" + `created` + "`" + `)",
+					"CREATE INDEX ` + "`" + `idx_yR9lUni` + "`" + ` ON ` + "`" + `groups` + "`" + ` (` + "`" + `user` + "`" + `)"
+				],
 				"listRule": "@request.auth.id = user.id",
 				"viewRule": "@request.auth.id = user.id",
 				"createRule": "@request.auth.id != ''",
@@ -289,68 +315,9 @@ func init() {
 				"options": {}
 			},
 			{
-				"id": "_pb_users_auth_",
-				"created": "2023-01-29 16:13:04.861Z",
-				"updated": "2023-01-29 16:13:04.861Z",
-				"name": "users",
-				"type": "auth",
-				"system": false,
-				"schema": [
-					{
-						"system": false,
-						"id": "users_name",
-						"name": "name",
-						"type": "text",
-						"required": false,
-						"unique": false,
-						"options": {
-							"min": null,
-							"max": null,
-							"pattern": ""
-						}
-					},
-					{
-						"system": false,
-						"id": "users_avatar",
-						"name": "avatar",
-						"type": "file",
-						"required": false,
-						"unique": false,
-						"options": {
-							"maxSelect": 1,
-							"maxSize": 5242880,
-							"mimeTypes": [
-								"image/jpg",
-								"image/jpeg",
-								"image/png",
-								"image/svg+xml",
-								"image/gif",
-								"image/webp"
-							],
-							"thumbs": null
-						}
-					}
-				],
-				"listRule": "id = @request.auth.id",
-				"viewRule": "id = @request.auth.id",
-				"createRule": "",
-				"updateRule": "id = @request.auth.id",
-				"deleteRule": "id = @request.auth.id",
-				"options": {
-					"allowEmailAuth": true,
-					"allowOAuth2Auth": true,
-					"allowUsernameAuth": true,
-					"exceptEmailDomains": null,
-					"manageRule": null,
-					"minPasswordLength": 8,
-					"onlyEmailDomains": null,
-					"requireEmail": false
-				}
-			},
-			{
 				"id": "elul616p7fivid4",
 				"created": "2023-02-25 23:37:04.845Z",
-				"updated": "2023-02-26 18:52:21.396Z",
+				"updated": "2023-04-09 18:37:57.156Z",
 				"name": "bookmarks_metadata",
 				"type": "base",
 				"system": false,
@@ -361,7 +328,7 @@ func init() {
 						"name": "url",
 						"type": "url",
 						"required": true,
-						"unique": false,
+						"unique": true,
 						"options": {
 							"exceptDomains": [],
 							"onlyDomains": []
@@ -406,12 +373,122 @@ func init() {
 						}
 					}
 				],
+				"indexes": [],
+				"listRule": "@request.auth.id != \"\"",
+				"viewRule": "@request.auth.id != \"\"",
+				"createRule": "@request.auth.id != \"\"",
+				"updateRule": "@request.auth.id != \"\"",
+				"deleteRule": "@request.auth.id != \"\"",
+				"options": {}
+			},
+			{
+				"id": "grh3maryyyl7zm1",
+				"created": "2023-03-26 15:34:29.754Z",
+				"updated": "2023-04-09 18:37:57.162Z",
+				"name": "nested_collections",
+				"type": "base",
+				"system": false,
+				"schema": [
+					{
+						"system": false,
+						"id": "4603saav",
+						"name": "parent_collection",
+						"type": "relation",
+						"required": true,
+						"unique": false,
+						"options": {
+							"collectionId": "pejwlxcamufi2z9",
+							"cascadeDelete": false,
+							"minSelect": null,
+							"maxSelect": 1,
+							"displayFields": []
+						}
+					},
+					{
+						"system": false,
+						"id": "6rshnefq",
+						"name": "child_collection",
+						"type": "relation",
+						"required": true,
+						"unique": false,
+						"options": {
+							"collectionId": "pejwlxcamufi2z9",
+							"cascadeDelete": false,
+							"minSelect": null,
+							"maxSelect": 1,
+							"displayFields": []
+						}
+					}
+				],
+				"indexes": [
+					"CREATE INDEX ` + "`" + `_grh3maryyyl7zm1_created_idx` + "`" + ` ON ` + "`" + `nested_collections` + "`" + ` (` + "`" + `created` + "`" + `)",
+					"CREATE INDEX ` + "`" + `idx_mmnNXsM` + "`" + ` ON ` + "`" + `nested_collections` + "`" + ` (` + "`" + `parent_collection` + "`" + `)"
+				],
 				"listRule": null,
 				"viewRule": null,
-				"createRule": "@request.auth.id != \"\"",
+				"createRule": null,
 				"updateRule": null,
 				"deleteRule": null,
 				"options": {}
+			},
+			{
+				"id": "_pb_users_auth_",
+				"created": "2023-04-09 18:37:57.136Z",
+				"updated": "2023-04-09 18:37:57.137Z",
+				"name": "users",
+				"type": "auth",
+				"system": false,
+				"schema": [
+					{
+						"system": false,
+						"id": "users_name",
+						"name": "name",
+						"type": "text",
+						"required": false,
+						"unique": false,
+						"options": {
+							"min": null,
+							"max": null,
+							"pattern": ""
+						}
+					},
+					{
+						"system": false,
+						"id": "users_avatar",
+						"name": "avatar",
+						"type": "file",
+						"required": false,
+						"unique": false,
+						"options": {
+							"maxSelect": 1,
+							"maxSize": 5242880,
+							"mimeTypes": [
+								"image/jpeg",
+								"image/png",
+								"image/svg+xml",
+								"image/gif",
+								"image/webp"
+							],
+							"thumbs": null
+						}
+					}
+				],
+				"indexes": [],
+				"listRule": "id = @request.auth.id",
+				"viewRule": "id = @request.auth.id",
+				"createRule": "",
+				"updateRule": "id = @request.auth.id",
+				"deleteRule": "id = @request.auth.id",
+				"options": {
+					"allowEmailAuth": true,
+					"allowOAuth2Auth": true,
+					"allowUsernameAuth": true,
+					"exceptEmailDomains": null,
+					"manageRule": null,
+					"minPasswordLength": 8,
+					"onlyEmailDomains": null,
+					"requireEmail": false
+				}
 			}
 		]`
 

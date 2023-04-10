@@ -63,3 +63,7 @@ pb_data/
 __debug_bin
 .env
 !tests/pb_data/data.db
+coverage.txt
+coverage.xml
+report.xml
+output.txt

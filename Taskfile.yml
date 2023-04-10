@@ -2,43 +2,54 @@ version: "3"
 
 tasks:
   build:
+    desc: Builds the app into a binary.
     cmds:
-      - go build -i -v cmd/server/bookmarkey/main.go
+      - go build cmd/server/bookmarkey/main.go
 
   start:
+    desc: Starts the app locally.
     cmds:
       - go run cmd/server/bookmarkey/main.go serve --http=localhost:8080
 
   start:docker:
+    desc: Starts the app in docker.
     cmds:
       - docker compose up --build -d
 
   lint:
+    desc: Runs the linter.
     cmds:
       - golangci-lint run {{.CLI_ARGS}}
 
   format:
+    desc: Runs the formatter.
     cmds:
       - go install golang.org/x/tools/cmd/goimports
       - goimports -local gitlab.com/bookmarkey/api -w .
 
   install:precommit:
+    desc: Installs git pre-commit hooks.
     cmds:
       - pre-commit install
 
   start:test:
+    desc: Starts the app using the test data.
     cmds:
       - go run cmd/server/bookmarkey/main.go serve --dir tests/pb_data  --http=localhost:8080
 
-  unit:tests:
+  tests:unit:
+    desc: Runs all the unit tests.
     cmds:
       - go test ./...
 
-  integration:tests:
+  tests:integration:
+    desc: Runs all the integration tests tests.
     cmds:
       - go test -tags=integration -v ./internal/...
 
   coverage:
+    desc: Run the integration tests and gets the code coverage
     cmds:
-      - go test -coverprofile=coverage.txt -tags=integration -v ./internal/... | go-junit-report -set-exit-code > report.xml
+      - go test -coverprofile=coverage.txt -tags=integration -v ./internal/... | tee output.txt
+      - cat output.txt | go-junit-report -set-exit-code > report.xml
       - gocover-cobertura < coverage.txt > coverage.xml

@@ -5,30 +5,18 @@ package bookmarks
 
 import (
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 
 	"github.com/pocketbase/pocketbase/tests"
-	"github.com/pocketbase/pocketbase/tokens"
+	"gitlab.com/bookmarkey/api/internal/helpers"
+	"gitlab.com/bookmarkey/api/internal/middleware"
 )
 
-const testDataDir = "../../tests/pb_data"
-
 func TestCreateBookmark(t *testing.T) {
-	recordToken, err := generateRecordToken("users", "test@bookmarkey.app")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	setupTestApp := func() (*tests.TestApp, error) {
-		testApp, err := tests.NewTestApp(testDataDir)
-		if err != nil {
-			return nil, err
-		}
-
-		AddHandlers(testApp)
-		return testApp, nil
-	}
+	jwtToken := getJWTToken(t, "test@bookmarkey.app")
+	setupTestApp := setupTests(t)
 
 	scenarios := []tests.ApiScenario{
 		{
@@ -39,7 +27,7 @@ func TestCreateBookmark(t *testing.T) {
 				"url": "https://blog.pragmaticengineer.com/"
 			}`),
 			RequestHeaders: map[string]string{
-				"Authorization": recordToken,
+				"Authorization": jwtToken,
 			},
 			ExpectedStatus: http.StatusCreated,
 			ExpectedEvents: map[string]int{"OnModelAfterCreate": 2, "OnModelBeforeCreate": 2},
@@ -53,7 +41,7 @@ func TestCreateBookmark(t *testing.T) {
 				"url": "https://blog.pragmaticengineer.com/"
 			}`),
 			RequestHeaders: map[string]string{
-				"Authorization": recordToken,
+				"Authorization": jwtToken,
 			},
 			ExpectedStatus: http.StatusCreated,
 			ExpectedEvents: map[string]int{"OnModelAfterCreate": 2, "OnModelBeforeCreate": 2},
@@ -67,7 +55,7 @@ func TestCreateBookmark(t *testing.T) {
 				"url": "https://wiki.guildwars2.com/wiki/Event_timers"
 			}`),
 			RequestHeaders: map[string]string{
-				"Authorization": recordToken,
+				"Authorization": jwtToken,
 			},
 			ExpectedStatus: http.StatusCreated,
 			ExpectedEvents: map[string]int{"OnModelAfterCreate": 1, "OnModelAfterUpdate": 1, "OnModelBeforeCreate": 1, "OnModelBeforeUpdate": 1},
@@ -81,7 +69,7 @@ func TestCreateBookmark(t *testing.T) {
 				"wrong_field": "https://blog.pragmaticengineer.com/"
 			}`),
 			RequestHeaders: map[string]string{
-				"Authorization": recordToken,
+				"Authorization": jwtToken,
 			},
 			ExpectedContent: []string{"message", "Key: 'NewBookmark.URL' Error:Field validation for 'URL' failed on the 'required' tag."},
 			ExpectedStatus:  http.StatusBadRequest,
@@ -108,18 +96,94 @@ func TestCreateBookmark(t *testing.T) {
 	}
 }
 
-// TODO: generalise
-func generateRecordToken(collectionNameOrId string, email string) (string, error) {
-	app, err := tests.NewTestApp(testDataDir)
-	if err != nil {
-		return "", err
-	}
-	defer app.Cleanup()
+func TestGetURLMetadata(t *testing.T) {
+	jwtToken := getJWTToken(t, "test@bookmarkey.app")
+	setupTestApp := setupTests(t)
 
-	record, err := app.Dao().FindAuthRecordByEmail(collectionNameOrId, email)
-	if err != nil {
-		return "", err
+	scenarios := []tests.ApiScenario{
+		{
+			Name:   "Successfully get URL metadata",
+			Method: http.MethodGet,
+			Url:    "/bookmark/metadata?url=" + url.QueryEscape("https://blog.pragmaticengineer.com/"),
+			RequestHeaders: map[string]string{
+				"Authorization": jwtToken,
+			},
+			ExpectedContent: []string{"url", "https://blog.pragmaticengineer.com/", "description", "Observations across the software engineering industry.", "title", "The Pragmatic Engineer", "image", ""},
+			ExpectedStatus:  http.StatusOK,
+			TestAppFactory:  setupTestApp,
+		},
+		{
+			Name:   "Successfully get URL metadata, that exists in DB",
+			Method: http.MethodGet,
+			Url:    "/bookmark/metadata?url=" + url.QueryEscape("https://stackoverflow.com/questions/7172784/how-do-i-post-json-data-with-curl"),
+			RequestHeaders: map[string]string{
+				"Authorization": jwtToken,
+			},
+			ExpectedContent: []string{"url", "https://stackoverflow.com/questions/7172784/how-do-i-post-json-data-with-curl", "description", "I use Ubuntu and installed cURL on it. I want to test my Spring REST application with cURL. I wrote my POST code at the Java side. However, I want to test it with cURL. I am trying to post a JSON d...", "title", "How do I POST JSON data with cURL?", "image", "https://cdn.sstatic.net/Sites/stackoverflow/Img/apple-touch-icon@2.png?v=73d79a89bded"},
+			ExpectedStatus:  http.StatusOK,
+			TestAppFactory:  setupTestApp,
+		},
+		{
+			Name:   "Fail to get URL metadata, invalid URL",
+			Method: http.MethodGet,
+			Url:    "/bookmark/metadata?url=" + url.QueryEscape("https://"),
+			RequestHeaders: map[string]string{
+				"Authorization": jwtToken,
+			},
+			ExpectedContent: []string{"message", "Expected valid URL in query parameter."},
+			ExpectedStatus:  http.StatusBadRequest,
+			TestAppFactory:  setupTestApp,
+		},
+		{
+			Name:   "Fail to get URL metadata, missing URL",
+			Method: http.MethodGet,
+			Url:    "/bookmark/metadata",
+			RequestHeaders: map[string]string{
+				"Authorization": jwtToken,
+			},
+			ExpectedContent: []string{"message", "Expected valid URL in query parameter."},
+			ExpectedStatus:  http.StatusBadRequest,
+			TestAppFactory:  setupTestApp,
+		},
+		{
+			Name:   "Fail to get URL metadata not authorized",
+			Method: http.MethodGet,
+			Url:    "/bookmark/metadata?url=" + url.QueryEscape("https://blog.pragmaticengineer.com/"),
+			RequestHeaders: map[string]string{
+				"Authorization": "",
+			},
+			ExpectedContent: []string{"message", "The request requires valid record authorization token to be set."},
+			ExpectedStatus:  http.StatusUnauthorized,
+			TestAppFactory:  setupTestApp,
+		},
 	}
 
-	return tokens.NewRecordAuthToken(app, record)
+	for _, scenario := range scenarios {
+		scenario.Test(t)
+	}
+}
+
+func getJWTToken(t *testing.T, userEmail string) string {
+	jwtToken, err := helpers.GenerateRecordToken(userEmail)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	return jwtToken
+
+}
+
+func setupTests(t *testing.T) func() (*tests.TestApp, error) {
+	setupTestApp := func() (*tests.TestApp, error) {
+		testApp, err := tests.NewTestApp(helpers.TestDataDir)
+		middleware.ApplyMiddleware(testApp.BaseApp)
+		if err != nil {
+			return nil, err
+		}
+
+		AddHandlers(testApp)
+		return testApp, nil
+	}
+
+	return setupTestApp
 }
