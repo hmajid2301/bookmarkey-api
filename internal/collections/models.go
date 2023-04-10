@@ -1,3 +1,4 @@
+// Package collections provides ways to interact with the collections, such as checking who owns a collection
 package collections
 
 import (

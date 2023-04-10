@@ -78,7 +78,9 @@ func (s Service) GetMetadata(url string) (*BookmarkMetaData, error) {
 	if err != nil {
 		return metadata, err
 	}
-	defer res.Body.Close()
+	defer func() {
+		err = res.Body.Close()
+	}()
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {

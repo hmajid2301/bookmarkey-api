@@ -1,7 +1,7 @@
+// Package main starts our web application and configures everything such as logger and sentry
 package main
 
 import (
-	"log"
 	"os"
 	"time"
 
@@ -9,6 +9,8 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	"gitlab.com/bookmarkey/api/internal/bookmarks"
 	"gitlab.com/bookmarkey/api/internal/middleware"
@@ -16,12 +18,13 @@ import (
 )
 
 func main() {
-	godotenv.Load()
+	_ = godotenv.Load()
 	app := pocketbase.New()
 	migratecmd.MustRegister(app, app.RootCmd, &migratecmd.Options{
 		Automigrate: true,
 	})
 
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	err := sentry.Init(sentry.ClientOptions{
 		Dsn:              os.Getenv("SENTRY_DSN"),
 		Environment:      os.Getenv("ENV"),
@@ -29,20 +32,21 @@ func main() {
 		EnableTracing:    true,
 	})
 	if err != nil {
-		log.Fatalf("failed to start Sentry: %s", err)
+		log.Fatal().Err(err).Msg("failed to start Sentry")
 	}
 
 	err = app.Bootstrap()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err)
 	}
 
 	middleware.ApplyMiddleware(app)
 	bookmarks.AddHandlers(app)
 
 	defer sentry.Flush(2 * time.Second)
+	log.Info().Msg("starting bookmarkey API service")
 	if err := app.Start(); err != nil {
 		sentry.CaptureException(err)
-		log.Fatal(err)
+		log.Fatal().Err(err)
 	}
 }

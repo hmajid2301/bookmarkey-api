@@ -19,18 +19,31 @@ tasks:
   lint:
     desc: Runs the linter.
     cmds:
+      # - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.52.2
       - golangci-lint run {{.CLI_ARGS}}
 
   format:
     desc: Runs the formatter.
     cmds:
-      - go install golang.org/x/tools/cmd/goimports
       - goimports -local gitlab.com/bookmarkey/api -w .
+
+  install:tools:
+    desc: Install all the tool (binaries), such as junit.
+    internal: true
+    cmds:
+      - cat tools.go | grep _ | awk -F'"' '{print $2}' | xargs -tI % go install %
 
   install:precommit:
     desc: Installs git pre-commit hooks.
+    internal: true
     cmds:
       - pre-commit install
+
+  install:
+    desc: Install all deps for this project
+    deps: [install:tools]
+    cmds:
+      - go mod download
 
   start:test:
     desc: Starts the app using the test data.

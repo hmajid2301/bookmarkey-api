@@ -1,44 +1,19 @@
 run:
   timeout: 5m
+  modules-download-mode: readonly
   skip-dirs:
     - migrations
 
 linters:
-  disable-all: true
   enable:
     - revive
     - govet
-    - depguard
-    - prealloc
-
-linters-settings:
-  depguard:
-    packages:
-      - crypto/md5
-    packages-with-error-message:
-      - crypto/md5: "MD5 is not FIPS-compliant"
-    include-go-root: true
-  prealloc:
-    # Report pre-allocation suggestions only on simple loops that have no returns/breaks/continues/gotos in them.
-    # Default: true
-    simple: true
-    # Report pre-allocation suggestions on range loops.
-    # Default: true
-    range-loops: true
-    # Report pre-allocation suggestions on for loops.
-    # Default: false
-    for-loops: false
+    - errcheck
+    - goimports
+    - staticcheck
+    - unconvert
 
 issues:
-  # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
+  exclude-use-default: false
   max-issues-per-linter: 0
-
-  # Maximum count of issues with the same text. Set to 0 to disable. Default is 3.
   max-same-issues: 0
-
-  # exclude-use-default: false
-  include:
-    # EXC0012 revive: exported (.+) should have comment( \(or a comment on this block\))? or be unexported
-    - EXC0012
-    # EXC0014 revive: comment on exported (.+) should be of the form "(.+)..."
-    - EXC0014

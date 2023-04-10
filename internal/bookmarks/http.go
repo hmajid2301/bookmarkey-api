@@ -1,8 +1,8 @@
+// Package bookmarks provides ways to interact with the bookmarks, such as adding a new bookmark
 package bookmarks
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"net/url"
 
@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/models"
+	"github.com/rs/zerolog/log"
 )
 
 // Servicer used to interact with the service module
@@ -55,7 +56,7 @@ func (h Handler) CreateBookmark(c echo.Context) error {
 	err := h.service.Create(b.URL, collectionID, authRecord.Id)
 
 	if err != nil {
-		log.Println("failed to create bookmark: %w", err)
+		log.Error().Err(err).Msg("failed to create bookmark")
 		sentry.CaptureException(err)
 		if errors.Is(err, ErrNotAuthorized) {
 			return apis.NewForbiddenError(err.Error(), nil)
@@ -82,7 +83,7 @@ func (h Handler) GetURLMetadata(c echo.Context) error {
 	u, err := url.ParseRequestURI(c.QueryParam(("url")))
 	if err != nil || (u.Scheme == "" || u.Host == "") {
 		if err != nil {
-			log.Println(err)
+			log.Error().Err(err)
 			sentry.CaptureException(err)
 		}
 		return echo.NewHTTPError(http.StatusBadRequest, "Expected valid URL in query parameter")
@@ -90,7 +91,7 @@ func (h Handler) GetURLMetadata(c echo.Context) error {
 
 	bookmarkMetadata, err := h.service.GetMetadata(u.String())
 	if err != nil {
-		log.Println("failed to get metadata: %w", err)
+		log.Error().Err(err).Msg("failed to get metadata")
 		sentry.CaptureException(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get metadata")
 	}

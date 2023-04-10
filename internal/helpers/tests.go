@@ -1,3 +1,4 @@
+// Package helpers provides a bunch of common/helper functions such as simplifying testing (reducing boilerplate)
 package helpers
 
 import (

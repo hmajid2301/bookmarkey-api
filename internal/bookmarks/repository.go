@@ -9,9 +9,6 @@ import (
 	"github.com/pocketbase/pocketbase/daos"
 )
 
-const collectionName = "bookmarks"
-const metaCollectionName = "bookmarks_metadata"
-
 // SQLiteStore used to interact with DB
 type SQLiteStore struct {
 	client *daos.Dao
@@ -38,11 +35,8 @@ func (s SQLiteStore) Create(metadata *BookmarkMetaData, collectionID string, use
 			CustomOrder:      math.MaxInt32,
 		}
 
-		if err := txDao.Save(bookmark); err != nil {
-			return err
-		}
-
-		return nil
+		err := txDao.Save(bookmark)
+		return err
 	})
 	return err
 }
@@ -58,9 +52,5 @@ func (s SQLiteStore) GetByURL(url string) (*BookmarkMetaData, error) {
 		Limit(1).
 		One(bookmarkMetadata)
 
-	if err != nil {
-		return nil, err
-	}
-
-	return bookmarkMetadata, nil
+	return bookmarkMetadata, err
 }

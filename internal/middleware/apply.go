@@ -1,3 +1,4 @@
+// Package middleware provides different middlewares than can be used by the http transports
 package middleware
 
 import (

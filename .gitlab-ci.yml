@@ -12,13 +12,7 @@ image: golang:1.20
     - merge_request
   before_script:
     - go install github.com/go-task/task/v3/cmd/task@latest
-    - go mod download
-  #   - mkdir -p .go
-  # variables:
-  #   GOPATH: $CI_PROJECT_DIR/.go
-  # cache:
-  #   paths:
-  #     - .go/pkg/mod/
+    - task install
 
 stages:
   - test
@@ -33,7 +27,7 @@ format:
     - task format
 
 lint:
-  image: registry.gitlab.com/gitlab-org/gitlab-build-images:golangci-lint-alpine
+  image: golangci/golangci-lint:v1.52.2-alpine
   extends:
     - .task
   script:
@@ -46,8 +40,6 @@ coverage:
     - main
     - merge_request
   script:
-    - go install github.com/jstemmer/go-junit-report/v2@latest
-    - go install github.com/boumenot/gocover-cobertura@latest
     - task coverage
   coverage: /^coverage:\s(\d+(?:\.\d+)?%)/
   artifacts:
