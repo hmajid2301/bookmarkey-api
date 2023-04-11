@@ -3,6 +3,8 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
+      cache_from:
+        - registry.gitlab.com/bookmarkey/api:latest
     volumes:
       - .:/build
     ports:

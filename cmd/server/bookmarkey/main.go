@@ -6,11 +6,14 @@ import (
 	"time"
 
 	"github.com/getsentry/sentry-go"
+	sentryotel "github.com/getsentry/sentry-go/otel"
 	"github.com/joho/godotenv"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"go.opentelemetry.io/otel"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
 	"gitlab.com/bookmarkey/api/internal/bookmarks"
 	"gitlab.com/bookmarkey/api/internal/middleware"
@@ -25,12 +28,7 @@ func main() {
 	})
 
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
-	err := sentry.Init(sentry.ClientOptions{
-		Dsn:              os.Getenv("SENTRY_DSN"),
-		Environment:      os.Getenv("ENV"),
-		TracesSampleRate: 1.0,
-		EnableTracing:    true,
-	})
+	err := setupSentry()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to start Sentry")
 	}
@@ -49,4 +47,19 @@ func main() {
 		sentry.CaptureException(err)
 		log.Fatal().Err(err)
 	}
+}
+
+func setupSentry() error {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn:              os.Getenv("SENTRY_DSN"),
+		Environment:      os.Getenv("ENV"),
+		TracesSampleRate: 0.8,
+		EnableTracing:    true,
+	})
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithSpanProcessor(sentryotel.NewSentrySpanProcessor()),
+	)
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(sentryotel.NewSentryPropagator())
+	return err
 }

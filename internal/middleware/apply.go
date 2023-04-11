@@ -8,7 +8,7 @@ import (
 	"github.com/pocketbase/pocketbase/core"
 
 	"github.com/labstack/echo/v5"
-	echomiddleware "github.com/labstack/echo/v5/middleware"
+	"github.com/labstack/echo/v5/middleware"
 )
 
 // CustomValidator enables us to use the validator package
@@ -28,7 +28,7 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 // ApplyMiddleware adds all the generic middleware to our app
 func ApplyMiddleware(app core.App) {
 	app.OnBeforeServe().Add(func(e *core.ServeEvent) error {
-		e.Router.Use(echomiddleware.Logger())
+		e.Router.Use(middleware.Logger())
 		e.Router.Use(NewSentry(SentryOptions{}))
 		e.Router.Validator = &CustomValidator{validator: validator.New()}
 		return nil

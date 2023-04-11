@@ -19,7 +19,6 @@ func NewStore(app core.App) SQLiteStore {
 
 // GetByID returns a record by ID
 func (s SQLiteStore) GetByID(id string) (*Collection, error) {
-
 	collection := &Collection{}
 	err := s.client.ModelQuery(&Collection{}).AndWhere(dbx.HashExp{"id": id}).Limit(1).One(collection)
 	if err != nil {
