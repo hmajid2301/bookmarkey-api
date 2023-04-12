@@ -1,5 +1,6 @@
 services:
   app:
+    image: registry.gitlab.com/bookmarkey/api:deploy
     build:
       dockerfile: Dockerfile
       context: .

@@ -64,6 +64,9 @@ deploy:preview:
     - docker login -u ${CI_REGISTRY_USER} -p ${CI_REGISTRY_PASSWORD} ${CI_REGISTRY}
     - docker build --cache-from ${CI_REGISTRY_IMAGE} -t ${CI_REGISTRY_IMAGE}:deploy .
     - /root/.fly/bin/flyctl deploy --config ./fly.preview.toml
+  environment:
+    name: preview
+    url: https://preview.pocketbase.bookmarkey.app
 
 deploy:production:
   stage: deploy
@@ -80,6 +83,9 @@ deploy:production:
     - docker build --cache-from ${CI_REGISTRY_IMAGE} -t ${CI_REGISTRY_IMAGE}:latest -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} -t ${CI_REGISTRY_IMAGE}:deploy .
     - docker push ${CI_REGISTRY_IMAGE} --all-tags
     - /root/.fly/bin/flyctl deploy --config ./fly.production.toml
+  environment:
+    name: production
+    url: https://pocketbase.bookmarkey.app
 
 notify:success:
   stage: notify

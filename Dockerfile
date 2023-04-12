@@ -1,16 +1,16 @@
 FROM golang:1.20-alpine as builder
 
 WORKDIR /build
-RUN apk update && apk upgrade && \
-	apk add --no-cache ca-certificates && \
-	update-ca-certificates
 
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o bookmarkey cmd/server/bookmarkey/main.go
 
-FROM scratch
+FROM alpine:3.17.3
 COPY --from=builder /build/bookmarkey .
-COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=flyio/litefs:0.3 /usr/local/bin/litefs /usr/local/bin/litefs
 
-ENTRYPOINT [ "./bookmarkey" ]
-CMD ["serve", "--http=0.0.0.0:8080", "--encryptionEnv=PB_ENCRYPTION_KEY"]
+ADD etc/litefs.yml /etc/litefs.yml
+
+RUN apk add fuse
+
+ENTRYPOINT litefs mount -- ./bookmarkey serve --http=0.0.0.0:8080 --encryptionEnv=PB_ENCRYPTION_KEY
