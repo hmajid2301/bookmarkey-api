@@ -66,7 +66,7 @@ deploy:preview:
     - /root/.fly/bin/flyctl deploy --config ./fly.preview.toml
   environment:
     name: preview
-    url: https://preview.pocketbase.bookmarkey.app
+    url: https://preview.api.bookmarkey.app
 
 deploy:production:
   stage: deploy
@@ -85,7 +85,7 @@ deploy:production:
     - /root/.fly/bin/flyctl deploy --config ./fly.production.toml
   environment:
     name: production
-    url: https://pocketbase.bookmarkey.app
+    url: https://api.bookmarkey.app
 
 notify:success:
   stage: notify
