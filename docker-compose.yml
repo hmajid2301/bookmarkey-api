@@ -6,6 +6,7 @@ services:
       context: .
       cache_from:
         - registry.gitlab.com/bookmarkey/api:latest
+    entrypoint: ./bookmarkey serve --http=0.0.0.0:8080 --encryptionEnv=PB_ENCRYPTION_KEY
     volumes:
       - .:/build
     ports:

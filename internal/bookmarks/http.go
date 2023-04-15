@@ -10,7 +10,7 @@ import (
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/models"
-	"github.com/rs/zerolog/log"
+	"github.com/rs/zerolog"
 )
 
 // Servicer used to interact with the service module
@@ -55,8 +55,9 @@ func (h Handler) CreateBookmark(c echo.Context) error {
 	collectionID := c.PathParam(("id"))
 	err := h.service.Create(b.URL, collectionID, authRecord.Id)
 
+	l := zerolog.Ctx(c.Request().Context())
 	if err != nil {
-		log.Error().Err(err).Msg("failed to create bookmark")
+		l.Error().Err(err).Msg("failed to create bookmark")
 		sentry.CaptureException(err)
 		if errors.Is(err, ErrNotAuthorized) {
 			return apis.NewForbiddenError(err.Error(), nil)
@@ -80,10 +81,11 @@ func (h Handler) GetURLMetadata(c echo.Context) error {
 		scope.SetUser(sentry.User{ID: authRecord.Id})
 	})
 
+	l := zerolog.Ctx(c.Request().Context())
 	u, err := url.ParseRequestURI(c.QueryParam(("url")))
 	if err != nil || (u.Scheme == "" || u.Host == "") {
 		if err != nil {
-			log.Error().Err(err)
+			l.Error().Err(err)
 			sentry.CaptureException(err)
 		}
 		return echo.NewHTTPError(http.StatusBadRequest, "Expected valid URL in query parameter")
@@ -91,7 +93,7 @@ func (h Handler) GetURLMetadata(c echo.Context) error {
 
 	bookmarkMetadata, err := h.service.GetMetadata(u.String())
 	if err != nil {
-		log.Error().Err(err).Msg("failed to get metadata")
+		l.Error().Err(err).Msg("failed to get metadata")
 		sentry.CaptureException(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get metadata")
 	}

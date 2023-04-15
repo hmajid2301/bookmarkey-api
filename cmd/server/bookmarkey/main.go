@@ -10,7 +10,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/otel"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -27,7 +26,6 @@ func main() {
 		Automigrate: true,
 	})
 
-	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	err := setupSentry()
 	if err != nil {
 		log.Fatal().Err(err).Msg("failed to start Sentry")

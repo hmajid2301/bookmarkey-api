@@ -67,3 +67,5 @@ coverage.txt
 coverage.xml
 report.xml
 output.txt
+bin
+!bin/.gitkeep
