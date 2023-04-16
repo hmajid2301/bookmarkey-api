@@ -12,8 +12,8 @@ require (
 	github.com/jstemmer/go-junit-report v1.0.0
 	github.com/labstack/echo/v5 v5.0.0-20220201181537-ed2888cfa198
 	github.com/pocketbase/dbx v1.10.0
-	github.com/pocketbase/pocketbase v0.14.3
-	github.com/rs/zerolog v1.29.0
+	github.com/pocketbase/pocketbase v0.14.5
+	github.com/rs/zerolog v1.29.1
 	go.opentelemetry.io/otel v1.11.2
 	go.opentelemetry.io/otel/sdk v1.11.2
 	golang.org/x/tools v0.8.0
