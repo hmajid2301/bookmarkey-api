@@ -9,6 +9,7 @@ image = "registry.gitlab.com/bookmarkey/api:deploy"
 
 [env]
 ENV = "production"
+SERVICE_NAME = "bookmarkey_api"
 
 [experimental]
 allowed_public_ports = []

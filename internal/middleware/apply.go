@@ -31,10 +31,9 @@ func ApplyMiddleware(app core.App) {
 		e.Router.Use(middleware.Recover())
 		e.Router.Use(middleware.Logger())
 		e.Router.Use(middleware.RequestID())
-		e.Router.Use(NewSentry(SentryOptions{}))
 		e.Router.Use(echo.WrapMiddleware(logger))
-		// e.Router.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
-		// 	LogURI:    true,
+		e.Router.Use(NewOtel().Middleware())
+		// e.Router.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{ LogURI:    true,
 		// 	LogStatus: true,
 		// 	LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
 		// 		l := zerolog.Ctx(c.Request().Context())

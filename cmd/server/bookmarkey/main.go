@@ -3,19 +3,16 @@ package main
 
 import (
 	"os"
-	"time"
 
-	"github.com/getsentry/sentry-go"
-	sentryotel "github.com/getsentry/sentry-go/otel"
+	beeline "github.com/honeycombio/beeline-go"
 	"github.com/joho/godotenv"
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/plugins/migratecmd"
 	"github.com/rs/zerolog/log"
-	"go.opentelemetry.io/otel"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 
 	"gitlab.com/bookmarkey/api/internal/bookmarks"
 	"gitlab.com/bookmarkey/api/internal/middleware"
+
 	_ "gitlab.com/bookmarkey/api/migrations"
 )
 
@@ -26,38 +23,22 @@ func main() {
 		Automigrate: true,
 	})
 
-	err := setupSentry()
-	if err != nil {
-		log.Fatal().Err(err).Msg("failed to start Sentry")
-	}
-
-	err = app.Bootstrap()
+	err := app.Bootstrap()
 	if err != nil {
 		log.Fatal().Err(err)
 	}
-
+	beeline.Init(beeline.Config{
+		WriteKey:    os.Getenv("HONEYCOMB_API_KEY"),
+		Dataset:     os.Getenv("SERVICE_NAME"),
+		ServiceName: os.Getenv("SERVICE_NAME"),
+	})
 	middleware.ApplyMiddleware(app)
 	bookmarks.AddHandlers(app)
 
-	defer sentry.Flush(2 * time.Second)
+	defer beeline.Close()
+
 	log.Info().Msg("starting bookmarkey API service")
 	if err := app.Start(); err != nil {
-		sentry.CaptureException(err)
 		log.Fatal().Err(err)
 	}
-}
-
-func setupSentry() error {
-	err := sentry.Init(sentry.ClientOptions{
-		Dsn:              os.Getenv("SENTRY_DSN"),
-		Environment:      os.Getenv("ENV"),
-		TracesSampleRate: 0.8,
-		EnableTracing:    true,
-	})
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithSpanProcessor(sentryotel.NewSentrySpanProcessor()),
-	)
-	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(sentryotel.NewSentryPropagator())
-	return err
 }

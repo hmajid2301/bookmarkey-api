@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/getsentry/sentry-go"
 	"github.com/labstack/echo/v5"
 	"github.com/pocketbase/pocketbase/apis"
 	"github.com/pocketbase/pocketbase/models"
@@ -40,10 +39,6 @@ type NewBookmark struct {
 func (h Handler) CreateBookmark(c echo.Context) error {
 	authRecord, _ := c.Get(apis.ContextAuthRecordKey).(*models.Record)
 
-	sentry.ConfigureScope(func(scope *sentry.Scope) {
-		scope.SetUser(sentry.User{ID: authRecord.Id})
-	})
-
 	b := new(NewBookmark)
 	if err := c.Bind(b); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
@@ -58,7 +53,6 @@ func (h Handler) CreateBookmark(c echo.Context) error {
 	l := zerolog.Ctx(c.Request().Context())
 	if err != nil {
 		l.Error().Err(err).Msg("failed to create bookmark")
-		sentry.CaptureException(err)
 		if errors.Is(err, ErrNotAuthorized) {
 			return apis.NewForbiddenError(err.Error(), nil)
 		}
@@ -75,18 +69,11 @@ type GetURLMetadata struct {
 
 // GetURLMetadata gets the metadata associated with a URL
 func (h Handler) GetURLMetadata(c echo.Context) error {
-	authRecord, _ := c.Get(apis.ContextAuthRecordKey).(*models.Record)
-
-	sentry.ConfigureScope(func(scope *sentry.Scope) {
-		scope.SetUser(sentry.User{ID: authRecord.Id})
-	})
-
 	l := zerolog.Ctx(c.Request().Context())
 	u, err := url.ParseRequestURI(c.QueryParam(("url")))
 	if err != nil || (u.Scheme == "" || u.Host == "") {
 		if err != nil {
 			l.Error().Err(err)
-			sentry.CaptureException(err)
 		}
 		return echo.NewHTTPError(http.StatusBadRequest, "Expected valid URL in query parameter")
 	}
@@ -94,7 +81,6 @@ func (h Handler) GetURLMetadata(c echo.Context) error {
 	bookmarkMetadata, err := h.service.GetMetadata(u.String())
 	if err != nil {
 		l.Error().Err(err).Msg("failed to get metadata")
-		sentry.CaptureException(err)
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get metadata")
 	}
 
